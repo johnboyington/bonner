@@ -1,0 +1,27 @@
+c
+11 PZ    0.00    $plane tip top
+12 PZ   -0.20    $plane tip bot
+13 PZ   -0.70    $plane crystal top
+14 PZ   -1.10    $plane crystal bot
+15 PZ   -4.50    $plane 1.5
+16 PZ   -4.70    $plane 1.6
+17 PZ  -10.50    $plane 1.7
+18 PZ  -11.70    $plane 1.8
+19 PZ  -20.00
+c
+21 CZ    0.20    $cylinder 1.1
+22 CZ    0.50    $cylinder 1.2
+23 CZ    0.60    $cylinder 1.3
+24 CZ    0.70    $cylinder 1.4
+25 CZ    0.90    $cylinder 1.5
+26 CZ    2.54    $cylinder 1.6
+27 CZ    2.14    $cylinder 1.7
+c
+c
+99 RPP -40 20  -20 20  -40 30 
+
+c  *********************************************************
+c                           BLOCK 3
+c  *********************************************************
+NPS   2.5E8
+IMP:N 1 16r 0
