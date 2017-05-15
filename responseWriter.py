@@ -61,7 +61,7 @@ netot = np.sum(nfl, axis=1)
 '''
 This function creates the source term for the bonner sphere mcnp input file
 
-It uses
+It uses the cosine bin data from the given energy group to write the source distribution
 
 Inputs:
     numb - the energy group number
@@ -69,6 +69,7 @@ Inputs:
     eee - the energy group's upper bound (MeV)
 '''
 def Source(numb, ee, eee):
+    #first value in SP card must be zero, so add a zero to the cosine data
     d = np.concatenate((np.array([0]), nfl[numb]), axis=0)
     H = ''
     H += 'c  ---------------------------------------------------------\n'
@@ -157,6 +158,7 @@ def bashFile(diameter, energy):
 erg = range(len(eb) - 1)
 dia = range(len(size))
 
+#loop through each energy group and sphere size
 for ii in dia:
     for jj in erg:
         s = ''
