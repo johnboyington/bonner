@@ -61,10 +61,12 @@ netot = np.sum(nfl, axis=1)
 '''
 This function creates the source term for the bonner sphere mcnp input file
 
+It uses
+
 Inputs:
     numb - the energy group number
-    ee - the energy group's lower bound
-    eee - the energy group's upper bound
+    ee - the energy group's lower bound (MeV)
+    eee - the energy group's upper bound (MeV)
 '''
 def Source(numb, ee, eee):
     d = np.concatenate((np.array([0]), nfl[numb]), axis=0)
@@ -88,11 +90,16 @@ def Source(numb, ee, eee):
         H += '{}  {:10.5e} {:10.5e} {:10.5e} {:10.5e}\n'.format(card, d[ii * 4], d[ii * 4 + 1], d[ii * 4 + 2], d[ii * 4 + 3])
     return H
 
+#writes the sphere card for the mcnp input
 def Sphere(big):
     H = ''
     H = '01  S   0 0 -0.9  {}    $Bonner Sphere\n'.format(big)
     return H
 
+'''
+The next 3 functions just read in the mcnp input file data for different cards
+that exist in text files in this directory. They are constant for each problem.
+'''
 def Card0():
     H = ''
     H = open('card0.txt', 'r').read()
@@ -105,10 +112,14 @@ def Card2():
     H = ''
     H = open('card2.txt', 'r').read()
     return H
+
+#this function names the mcnp input file
 def Name(big, erg):
     N = 's{}e{}'.format(big, erg)
     return N
 
+
+#this creates a qsub file for each input file for submission to eigendoit
 def subFile(name):
     H = '#!/bin/sh\n'
     H += '#PBS -l nodes=1:ppn=32\n'
@@ -121,6 +132,7 @@ def subFile(name):
     H += 'mpirun -np $NO_OF_CORES -machinefile nodes mcnp6.mpi i={}.i run={}.ru o={}.o\n'.format(name, name, name)
     return H
 
+#this function creates a bash file to submit all of the qsub files for each mcnp input
 def bashFile(diameter, energy):
     H = '#!/bin/bash\n'
     H += 'declare -a siz=('
