@@ -30,7 +30,7 @@ eq = np.array([1.00000000e+07,   3.67900000e+06,   1.35300000e+06,
                1.00000000e-01,   8.00000000e-02,   5.00000000e-02,
                3.00000000e-02,   1.50000000e-02,   1.00000000e-05, 0])
 
-#this reverses the erg bins becuase I wrote them backwards
+#this reverses the erg bins becuase I copied them backwards
 eb = eq[::-1]
 
 #these are the cosine bins used by the source terms
