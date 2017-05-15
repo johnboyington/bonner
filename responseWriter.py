@@ -5,18 +5,19 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 
+#create a directory to put mcnp input files into
 try:
-    os.mkdir('/home/john/bonner_sphere/mcnp/writer/output')
+    os.mkdir('output')
 except OSError,e:
     print e
 
-
-rawdata = np.array([1935, 8823, 11049, 6825, 2544, 1402, 896])
-
+#this array contains the bonner sphere diameters in inches
 sizeinch = np.array([0, 2, 3, 5, 8, 10, 12])
+
+#convert the bonner sphere diameters into radii in cm
 size = (sizeinch * 2.54) / 2.
 
-#these bins aren't quite right
+#this is the energy bins used in the source term
 eq = np.array([1.00000000e+07,   3.67900000e+06,   1.35300000e+06,
                5.00000000e+05,   4.08500000e+04,   9.11800000e+03,
                1.48729000e+02,   4.80520000e+01,   1.59680000e+01,
@@ -29,18 +30,42 @@ eq = np.array([1.00000000e+07,   3.67900000e+06,   1.35300000e+06,
                1.00000000e-01,   8.00000000e-02,   5.00000000e-02,
                3.00000000e-02,   1.50000000e-02,   1.00000000e-05, 0])
 
+#this reverses the erg bins becuase I wrote them backwards
 eb = eq[::-1]
 
+#these are the cosine bins used by the source terms
 cb = np.array([180, 90, 80, 70, 60, 50, 40, 30, 20, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0])
+
+#calculate the width of each cosine bin
 cbw = cb[:-1] - cb[1:]
+
+#reversing the cosine bins
 cbr = cb[::-1]
+
+#the factor to convert deg to rad
 f = np.pi / 180.
+
+#calculates the cosine value of each bin
 ab = np.cos(cb * f)
 
+#reads in the neutron source flux data from the mcnp output file
 ndata = np.loadtxt('ndata.txt')[:,1:].T
+
+#reshapes the neutron data into an array
 nfl = ndata[0].reshape(len(cbw),-1).T
+
+#calculates the total neutron flux for each energy bin
 netot = np.sum(nfl, axis=1)
 
+
+'''
+This function creates the source term for the bonner sphere mcnp input file
+
+Inputs:
+    numb - the energy group number
+    ee - the energy group's lower bound
+    eee - the energy group's upper bound
+'''
 def Source(numb, ee, eee):
     d = np.concatenate((np.array([0]), nfl[numb]), axis=0)
     H = ''
@@ -95,9 +120,29 @@ def subFile(name):
     H += 'echo $NODE_LIST\n'
     H += 'mpirun -np $NO_OF_CORES -machinefile nodes mcnp6.mpi i={}.i run={}.ru o={}.o\n'.format(name, name, name)
     return H
+
+def bashFile(diameter, energy):
+    H = '#!/bin/bash\n'
+    H += 'declare -a siz=('
+    for ii in diameter:
+        H += '{} '.format(ii)
+    H += ')\n'
+    H += 'declare -a erg=('
+    for jj in energy:
+        H += '{} '.format(jj)
+    H += ')\n'
+    H += 'for G in "${siz[@]}"\n'
+    H += 'do\n'
+    H += '        for H in "${erg[@]}"\n'
+    H += '        do\n'
+    H += "                echo 'Submitting' 's'$G'e'$H\n"
+    H += "                qsub 's'$G'e'$H.qsub\n"
+    H += '        done\n'
+    H += 'done\n'
+    return H
     
 #set parameters
-erg = np.array(range(len(eb) - 9)) + 1
+erg = range(len(eb) - 1)
 dia = range(len(size))
 
 for ii in dia:
@@ -110,9 +155,11 @@ for ii in dia:
         s += Card2()
         t = ''
         t += subFile(Name(ii, jj))
-        with open('/home/john/bonner_sphere/mcnp/writer/output/{}.i'.format(Name(ii, jj)), 'w') as H:
+        with open('output/{}.i'.format(Name(ii, jj)), 'w') as H:
             H.write(s)
-        with open('/home/john/bonner_sphere/mcnp/writer/output/{}.qsub'.format(Name(ii, jj)), 'w') as K:
+        with open('output/{}.qsub'.format(Name(ii, jj)), 'w') as K:
             K.write(t)
 
-
+u = bashFile(dia, erg)
+with open('output/aRun.sh', 'w') as Y:
+    Y.write(u)
