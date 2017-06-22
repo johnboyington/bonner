@@ -28,13 +28,13 @@ eq = np.array([1.00000000e+07,   3.67900000e+06,   1.35300000e+06,
                6.25000000e-01,   4.00000000e-01,   3.20000000e-01,
                2.50000000e-01,   1.80000000e-01,   1.40000000e-01,
                1.00000000e-01,   8.00000000e-02,   5.00000000e-02,
-               3.00000000e-02,   1.50000000e-02,   1.00000000e-05, 0])
+               3.00000000e-02,   1.50000000e-02,   1.00000000e-05, 0]) * (10 ** -6)
 
 #this reverses the erg bins becuase I copied them backwards
 eb = eq[::-1]
 
 #these are the cosine bins used by the source terms
-cb = np.array([180, 90, 80, 70, 60, 50, 40, 30, 20, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0])
+cb = np.array([180, 90, 80, 70, 60, 50, 40, 30, 20, 10, 4, 3, 2, 1, 0])
 
 #calculate the width of each cosine bin
 cbw = cb[:-1] - cb[1:]
@@ -85,10 +85,12 @@ def Source(numb, ee, eee):
         if ii == 0 : card = 'SI5 H  '
         else: card = '        '         
         H += '{}  {:10.5e} {:10.5e} {:10.5e} {:10.5e}\n'.format(card, ab[ii * 4], ab[ii * 4 + 1], ab[ii * 4 + 2], ab[ii * 4 + 3])
+    H += '{}  {:10.5e} {:10.5e} {:10.5e}\n'.format(card, ab[12], ab[13], ab[14])
     for ii in range(len(ab) / 4):    
         if ii == 0 : card = 'SP5 D   '
         else: card = '        '         
         H += '{}  {:10.5e} {:10.5e} {:10.5e} {:10.5e}\n'.format(card, d[ii * 4], d[ii * 4 + 1], d[ii * 4 + 2], d[ii * 4 + 3])
+    H += '{}  {:10.5e} {:10.5e} {:10.5e}\n'.format(card, d[12], d[13], d[14])
     return H
 
 #writes the sphere card for the mcnp input
