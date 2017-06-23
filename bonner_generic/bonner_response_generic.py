@@ -26,6 +26,20 @@ Outputs
 
 import matplotlib.pyplot as plt
 import numpy as np
-import bonner_functions.py as bonner
+import bonner_functions as bonner
 import os
 import time
+
+t = time.time()
+response = []
+
+sphere_diameter = 12 
+sphere_diameter *= (2.54 / 2)
+energy = 1E1 #MeV
+
+
+bonner.mcnpWriter(sphere_diameter, energy)
+response.append(bonner.runFile())
+
+print response
+print 'Script Complete in {} seconds.'.format(time.time() - t)
