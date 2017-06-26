@@ -43,21 +43,21 @@ def Extract():
 
 def runFile():
     os.chdir('working')
-    os.system('mcnp6 inp=inp tasks 28')
+    os.system('mcnp6 inp=inp tasks 27')
     response = Extract()
     if response[2] == 0 or response[2] > 0.05:
         print 'Error above threshold. Invoking Advantg'
         os.system('advantg bonnerSphere.adv')
         os.chdir('output')
-        os.system('mcnp6 inp=inp wwinp=wwinp tasks 28')
+        os.system('mcnp6 inp=inp wwinp=wwinp tasks 27')
         response = Extract()
         os.chdir('..')
+        shutil.rmtree('adj_solution')
+        shutil.rmtree('model')
+        shutil.rmtree('output')
     os.remove('inp')
     os.remove('outp')
     os.remove('runtpe')
-    shutil.rmtree('adj_solution')
-    shutil.rmtree('model')
-    shutil.rmtree('output')
     os.chdir('..')
     return response
 
