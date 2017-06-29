@@ -7,11 +7,11 @@ mesh_refinement            mcnp
 mesh_x                     -40 20
 mesh_y                     -20 20
 mesh_z                     -40 30
-mesh_x_ints                120
-mesh_y_ints                80
-mesh_z_ints                140
+mesh_x_ints                60
+mesh_y_ints                40
+mesh_z_ints                70
 anisn_library              27n19g
-denovo_pn_order            3
+denovo_pn_order            5
 denovo_x_blocks            7
 denovo_y_blocks            4
 denovo_z_blocks            1

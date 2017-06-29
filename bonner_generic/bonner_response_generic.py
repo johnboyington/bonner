@@ -49,7 +49,7 @@ energy_groups = [                     4.00000000e-09,   1.00000000e-08,   2.5300
                     7.50000000e-01,   8.61000000e-01,   1.20000000e+00,   1.50000000e+00,
                     1.85000000e+00,   3.00000000e+00,   4.30000000e+00,   6.43000000e+00,
                     2.00000000e+01]
-
+energy_groups = [4.00000000e-09]
 
 with open('output/response_data.txt', 'w') as File:
     for sphere in sphere_diameters:
