@@ -33,7 +33,7 @@ start_time = time.time()
 
 
 #hard code groups
-sphere_diameters = [3] #[0, 2, 3, 5, 8, 10, 12]
+sphere_diameters = [5, 8, 10, 12] #[0, 2, 3, 5, 8, 10, 12]
 energy_groups = [                     4.00000000e-09,   1.00000000e-08,   2.53000000e-08,
                     4.00000000e-08,   5.00000000e-08,   6.00000000e-08,   8.00000000e-08,
                     1.00000000e-07,   1.50000000e-07,   2.00000000e-07,   2.50000000e-07,
@@ -49,14 +49,15 @@ energy_groups = [                     4.00000000e-09,   1.00000000e-08,   2.5300
                     7.50000000e-01,   8.61000000e-01,   1.20000000e+00,   1.50000000e+00,
                     1.85000000e+00,   3.00000000e+00,   4.30000000e+00,   6.43000000e+00,
                     2.00000000e+01]
-energy_groups = [4.00000000e-09]
 
-with open('output/response_data.txt', 'w') as File:
+                    
+sphere_diameters = [5]
+energy_groups = [6.00000000e-08]
+
+with open('output/response_data.txt', 'a') as File:
     for sphere in sphere_diameters:
         for energy in energy_groups:
-            bonner.mcnpWriter(sphere * (2.54 / 2), energy)
-            data = bonner.runFile()
-            File.write('{:2d}   {:14.8e}   {:14.8e}   {:14.8e} \n'.format(sphere, energy, data[0], data[2]))
+            bonner.runFile2(sphere * (2.54 / 2), energy)
 
 
 print 'Script Complete in {} seconds.'.format(time.time() - start_time)
