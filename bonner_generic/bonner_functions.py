@@ -27,41 +27,32 @@ def mcnpWriter(size, energy, particles=100000):
     s += open('card2.txt', 'r').read()
     with open('working/inp', 'w') as F:
         F.write(s)
-    print 'Sphere Diameter {} in. Energy {:e} MeV written.'.format((size * 2) / 2.54, energy)
+    print('Sphere Diameter {} in. Energy {:e} MeV written.'.format((size * 2) / 2.54, energy))
     return
 
 
-def advantgWriter(size):
+def advantgWriter(size, voxel):
     s = open('template.adv', 'r').read()
     s += 'mesh_x                     -40 -{} {} 20\n'.format(size, size)
     s += 'mesh_y                     -20 -{} {} 20\n'.format(size, size)
     s += 'mesh_z                     -40 -{} {} 30\n'.format(size, size)
-    s += 'mesh_x_ints                {} {} {}\n'.format(3, int(round(20 * size)), 3)
-    s += 'mesh_y_ints                {} {} {}\n'.format(3, int(round(20 * size)), 3)
-    s += 'mesh_z_ints                {} {} {}\n'.format(3, int(round(20 * size)), 3)
+    s += 'mesh_x_ints                {} {} {}\n'.format(1, int(round((1 / voxel) * size * 2)), 1)
+    s += 'mesh_y_ints                {} {} {}\n'.format(1, int(round((1 / voxel) * size * 2)), 1)
+    s += 'mesh_z_ints                {} {} {}\n'.format(1, int(round((1 / voxel) * size * 2)), 1)
     with open('working/bonnerSphere.adv', 'w') as F:
         F.write(s)
     return
 
 
 
-
-
-
-
-
-
-
-
-
 def Extract():
     F = open('outp', 'r').readlines()
     for ii in range(len(F)):
-        if ' multiplier bin:   1.00000E+00         4         105' in F[ii]:
+        if ' multiplier bin:   1.00000E+00         2         105' in F[ii]:
             line = F[ii + 1]
             val = float(line[17:28])
             err = float(line[29:35])
-            return [val, err * val, err]
+            return [val, err]
 
 
 
@@ -70,7 +61,7 @@ def runFile():
     os.system('mcnp6 inp=inp tasks 27')
     response = Extract()
     if response[2] == 0 or response[2] > 0.05:
-        print 'Error above threshold. Invoking Advantg'
+        print('Error above threshold. Invoking Advantg')
         os.system('advantg bonnerSphere.adv')
         os.chdir('output')
         os.system('mcnp6 inp=inp wwinp=wwinp tasks 27')
@@ -90,12 +81,12 @@ def runFile():
 
 def runFile2(size, energy):
     mcnpWriter(size * (2.54 / 2), energy)
-    advantgWriter(size * (2.54 / 2))
+    advantgWriter(size * (2.54 / 2), 0.5)
     os.chdir('working')
     os.system('mcnp6 inp=inp tasks 27')
     response = Extract()
-    if response[2] == 0 or response[2] > 0.05:
-        print 'Error above threshold. Invoking Advantg'
+    if response[1] == 0 or response[1] > 0.01:
+        print('Error above threshold. Invoking Advantg')
         os.system('advantg bonnerSphere.adv')
         os.chdir('output')
         os.system('mcnp6 inp=inp wwinp=wwinp tasks 27')
@@ -109,7 +100,7 @@ def runFile2(size, energy):
     os.remove('runtpe')
     os.chdir('..')
     with open('output/response_data.txt', 'a') as File:
-        File.append('{:2d}   {:14.8e}   {:14.8e}   {:14.8e} \n'.format(size, energy, response[0], response[2]))
+        File.write('{:2}   {:14.8e}   {:14.8e}   {:14.8e} \n'.format(size, energy, response[0], response[1]))
     return
 
 

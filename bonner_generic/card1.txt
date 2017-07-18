@@ -1,13 +1,13 @@
 c
-11 PZ    0.00    $plane tip top
-12 PZ   -0.20    $plane tip bot
-13 PZ   -0.70    $plane crystal top
-14 PZ   -1.10    $plane crystal bot
-15 PZ   -4.50    $plane 1.5
-16 PZ   -4.70    $plane 1.6
-17 PZ  -10.50    $plane 1.7
-18 PZ  -11.70    $plane 1.8
-19 PZ  -20.00
+11 PZ    0.9    $plane tip top
+12 PZ    0.7    $plane tip bot
+13 PZ    0.2    $plane crystal top
+14 PZ   -0.2    $plane crystal bot
+15 PZ   -3.6    $plane 1.5
+16 PZ   -3.8    $plane 1.6
+17 PZ   -9.6    $plane 1.7
+18 PZ  -10.8    $plane 1.8
+19 PZ  -19.1
 c
 21 CZ    0.20    $cylinder 1.1
 22 CZ    0.50    $cylinder 1.2
@@ -20,7 +20,7 @@ c
 c
 99 RPP -40 20  -20 20  -40 30 
 
-c  *********************************************************
-c                           BLOCK 3
-c  *********************************************************
-IMP:N 1 16r 0
+c ****************************************************************************** 
+c                               DATA CARDS 
+c ******************************************************************************
+IMP:N 1 6r 0

@@ -1,0 +1,27 @@
+NOTES ON BONNER SPHERE ADVANTG PARAMETRIC STUDY
+
+1. Select sphere size and ww disctetizations
+
+        Sphere Size - 5" diameter
+        Energy - 6e-08
+        WW disctetizations in ROI - 0.8 cm3, 0.4 cm3, 0.5 cm3, 0.25 cm3, 0.1 cm3, 0.05 cm3
+
+
+2. Create input files for each case
+        nps - 1E9 on eigendoit
+
+3. Run input files
+        0.8
+        0.5
+        0.4     
+        0.25
+        0.1
+        0.05
+
+4. Compile FOMs into a text document
+        Voxel size
+        FOM from MCNP
+        Modified FOM 1 / (mcnpRuntime + advantgRuntime) * (error^2)
+
+
+5. Plot results and put on document
