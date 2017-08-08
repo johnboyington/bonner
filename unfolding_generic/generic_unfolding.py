@@ -72,14 +72,15 @@ unfold.dsErgEdges = genericData[:,:,1][0]
 
 
 
-unfold.ibuName = ibuName
-unfold.fmtName = fmtName
-unfold.fluName = fluName
-unfold.outName = outName
-unfold.finalChiSqr = finalChiSqr
-unfold.temp = temp
-unfold.solnStructure = solnStructure
-unfold.solnRepresentation = solnRepresentation
-unfold.scaling = scaling
+unfold.ibuName = 'generic'
+unfold.fmtName = 'generic'
+unfold.fluName = 'generic'
+unfold.outName = 'generic'
+unfold.inpName = 'generic'
+unfold.finalChiSqr = 1.1
+unfold.temp = [[1.0, 0.85]]
+unfold.solnStructure = 2
+unfold.solnRepresentation = 1
+unfold.scaling = [0, 1, 1]
 
 
