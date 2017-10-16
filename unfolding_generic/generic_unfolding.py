@@ -23,7 +23,7 @@ unfold.sphereIDs = [['bare    ', 'bareSphere      '],
 unfold.sphereSizes = [0.0, 2.0, 3.0, 5.0, 8.0, 10.0, 12.0]
 
 # responseData - the measured response from each bonner sphere
-unfold.responseData = np.loadtxt('bonner_data.txt')
+unfold.responseData = np.loadtxt('data/bonner_data.txt')
 
 # responseError - the uncertainty associated with responseData due to statistics (as a percentage)
 unfold.responseError = np.sqrt(unfold.responseData) / unfold.responseData
@@ -37,16 +37,16 @@ unfold.correctionFactor = 0
 
 
 # read in response function data from a text file and reshape based on number of spheres and energy groups
-genericData = np.loadtxt('generic_data.txt')
+genericData = np.loadtxt('data/generic_data.txt')
 genericData = genericData.reshape(len(unfold.sphereSizes), -1, 4)
 
 
-
 # rfErgEdges = the energy bin edges of the response functions
-unfold.rfErgEdges = genericData[:,:,1][0]
+edges = np.concatenate((np.array([1E-11]), genericData[:, :, 1][0]))
+unfold.rfErgEdges = edges
 
 # responses - the 2x2 matrix containing the responses for each sphere
-unfold.responses = genericData[:,:,2]
+unfold.responses = genericData[:, :, 2]
 
 # reErgUnits - the units of the response functions, either 'MeV', 'keV', or 'eV'
 unfold.rfErgUnits = 'MeV'
@@ -68,14 +68,13 @@ unfold.mode = 1
 unfold.dsErgUnits = 'MeV'
 unfold.dS = np.ones(len(unfold.rfErgEdges))
 unfold.dsErr = np.full(unfold.dS.shape, 0.5)
-unfold.dsErgEdges = genericData[:,:,1][0]
-
+unfold.dsErgEdges = edges
 
 
 unfold.ibuName = 'generic'
 unfold.fmtName = 'generic'
 unfold.fluName = 'generic'
-unfold.outName = 'generic'
+unfold.outName = 'out'
 unfold.inpName = 'generic'
 unfold.finalChiSqr = 1.1
 unfold.temp = [1.0, 0.85]
@@ -83,4 +82,9 @@ unfold.solnStructure = 2
 unfold.solnRepresentation = 1
 unfold.scaling = [0, 1, 1]
 
+
+# write and run the files
 unfold.writeMaxedFiles()
+unfold.runMaxed()
+unfold.storeResult('first')
+unfold.plotSpectra()
