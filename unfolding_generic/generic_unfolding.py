@@ -83,8 +83,12 @@ unfold.solnRepresentation = 1
 unfold.scaling = [0, 1, 1]
 
 
+###############################################################################
 # write and run the files
-unfold.writeMaxedFiles()
-unfold.runMaxed()
-unfold.storeResult('first')
+
+chis = [4, 2, 1.5, 1.2, 1.1, 1.05]
+for chi in chis:
+    unfold.writeMaxedFiles()
+    unfold.runMaxed()
+    unfold.storeResult('$chi^2$ = {}'.format(chi))
 unfold.plotSpectra()
