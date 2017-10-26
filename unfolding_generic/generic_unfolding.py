@@ -95,6 +95,10 @@ for i in range(len(edges) - 1):
 
 flux = 1E12 * flux
 
+
+f = Flux(1./7., 600.0)
+flux = f.make_discrete(edges, scaling=1E12)
+
 unfold.dS = flux
 
 ###############################################################################
