@@ -93,7 +93,7 @@ for i in range(len(edges) - 1):
     # multiply by 1E6 to convert to eV from MeV
     flux[i] = f.compute_flux(edges[i] * 1E6)
 
-flux = 1E11 * flux
+flux = 1E12 * flux
 
 unfold.dS = flux
 
