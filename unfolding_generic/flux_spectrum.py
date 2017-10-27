@@ -69,7 +69,7 @@ class Flux():
         '''
         Makes discrete energy groups from continuous function above.
         '''
-        bin_values = []
+        bin_values = [0.00]
         for i in range(len(bins) - 1):
             area, err = quad(self.compute_flux, bins[i], bins[i+1])
             height = area / (bins[i+1] - bins[i])

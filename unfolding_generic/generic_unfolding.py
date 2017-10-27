@@ -87,17 +87,7 @@ unfold.scaling = [0, 1, 1]
 # writing over the default spectrum
 
 f = Flux(1./7., 600.0)
-flux = np.zeros(len(edges))
-for i in range(len(edges) - 1):
-    # f.compute_flux can return flux at a specific energy e (eV).
-    # multiply by 1E6 to convert to eV from MeV
-    flux[i] = f.compute_flux(edges[i] * 1E6)
-
-flux = 1E12 * flux
-
-
-f = Flux(1./7., 600.0)
-flux = f.make_discrete(edges, scaling=1E12)
+flux = f.make_discrete(edges * 1E6, scaling=6E11)
 
 unfold.dS = flux
 

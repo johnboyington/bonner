@@ -166,7 +166,7 @@ class BonnerSphereTools(object):
             x, y = self.makeStep(self.dsErgEdges, solution[1][1])
             plt.plot(x, y, label='{}'.format(solution[0]))
         if ds:
-            x, y = self.makeStep(self.dsErgEdges, self.dS[:])
+            x, y = self.makeStep(self.dsErgEdges, self.dS[1:])
             plt.plot(x, y, label='Default Spectrum')
         plt.xscale('log')
         plt.yscale('log')
