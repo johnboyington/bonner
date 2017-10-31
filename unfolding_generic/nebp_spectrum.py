@@ -24,25 +24,30 @@ class FluxNEBP():
         self.step_x, self.step_y = self.make_step()
 
     def store_data(self):
+        '''Loads in neutron flux data from a text file'''
         data = np.loadtxt('nebp_data.txt')
         return data
 
     def count_bins(self):
+        '''Counts the number of bins and bin edges in the data'''
         l = len(self.data)
         return l - 1, l
 
     def normalize_values(self):
+        '''Given input power level, normalizes the flux values to reactor power'''
         tally_area = tally_area = np.pi * (1.27 ** 2)
         C = 2.54 / (200 * 1.60218e-13 * tally_area)
         return self.data[:, 1] * C * self.power
 
     def make_step(self):
+        '''Make the binned flux data able to be plotted with plt.plot'''
         assert len(self.edges) - 1 == len(self.normalized_values), 'x - 1 != y'
         Y = np.array([[yy, yy] for yy in np.array(self.normalized_values)]).flatten()
         X = np.array([[xx, xx] for xx in np.array(self.edges)]).flatten()[1:-1]
         return X, Y
 
     def functional_form(self, E):
+        '''Produce a function from the step data (for use in integration)'''
         val = 0
         for i, v in enumerate(self.normalized_values):
             if E >= self.edges[i] and E < self.edges[i+1]:
@@ -50,10 +55,8 @@ class FluxNEBP():
         return val
 
     def change_bins(self, bins):
-        '''
-        Makes discrete energy groups from continuous function above.
-        TODO: Change method of integration.
-        '''
+        '''Makes discrete energy groups from continuous function above, given a desired bin structure.
+        TODO: Change method of integration.'''
         bin_values = [0.00]
         for i in range(len(bins) - 1):
             area, err = quad(self.functional_form, bins[i], bins[i+1])
@@ -62,6 +65,7 @@ class FluxNEBP():
         return bin_values
 
     def plot(self):
+        '''Plot flux data'''
         plt.figure(99)
         plt.plot(self.step_x, self.step_y)
         plt.xlabel('Energy MeV')
