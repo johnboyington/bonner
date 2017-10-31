@@ -175,7 +175,7 @@ class BonnerSphereTools(object):
         plt.ylabel('Fluence')
         plt.legend()
         plt.savefig('{}_plot.png'.format(self.outName))
-        plt.show()
-    
+        plt.close()
+
     def clearRepo(self):
         pass

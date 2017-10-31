@@ -11,7 +11,7 @@ k = constants.value('Boltzmann constant in eV/K')
 
 
 
-class Flux():
+class FluxTypical():
     """
     This class evaluate neutron flux at energy e. 
     At thermal energy range (e < 1eV), the flux is approximated by Maxwellian 

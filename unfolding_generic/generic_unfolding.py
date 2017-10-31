@@ -5,7 +5,8 @@ and gravel for unfolding a spectrum using generic bonner response functions.
 
 from unfoldingTools import BonnerSphereTools
 import numpy as np
-from flux_spectrum import Flux
+from lwr_spectrum import FluxTypical
+from nebp_spectrum import FluxNEBP
 
 unfold = BonnerSphereTools()
 
@@ -86,15 +87,22 @@ unfold.scaling = [0, 1, 1]
 ###############################################################################
 # writing over the default spectrum
 
-f = Flux(1./7., 600.0)
-flux = f.make_discrete(edges * 1E6, scaling=6E11)
+if True:
+    f = FluxTypical(1./7., 600.0)
+    flux = f.make_discrete(edges * 1E6, scaling=5E12)
+    unfold.dS = flux
 
-unfold.dS = flux
+    # unfold.run('maxed')
+    unfold.routine = 'gravel'
+    unfold.run('gravel')
+    unfold.plotSpectra()
 
-###############################################################################
-# write and run the files
+if False:
+    f = FluxNEBP(250)
+    flux = f.change_bins(edges)
+    unfold.dS = flux
 
-#unfold.run('maxed')
-unfold.routine = 'gravel'
-unfold.run('gravel')
-unfold.plotSpectra()
+    # unfold.run('maxed')
+    unfold.routine = 'gravel'
+    unfold.run('gravel')
+    unfold.plotSpectra()
