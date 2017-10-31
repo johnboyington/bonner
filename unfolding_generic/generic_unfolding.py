@@ -94,7 +94,7 @@ unfold.dS = flux
 ###############################################################################
 # write and run the files
 
-# unfold.run('maxed')
+#unfold.run('maxed')
 unfold.routine = 'gravel'
 unfold.run('gravel')
 unfold.plotSpectra()
