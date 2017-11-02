@@ -8,8 +8,6 @@ import numpy as np
 from lwr_spectrum import FluxTypical
 from nebp_spectrum import FluxNEBP
 
-unfold = BonnerSphereTools()
-
 
 class GenericUnfolding(BonnerSphereTools):
 
@@ -22,7 +20,7 @@ class GenericUnfolding(BonnerSphereTools):
     def loadBonnerResponses(self):
         responseData = np.loadtxt('data/bonner_data.txt')
         responseError = np.sqrt(responseData) / responseData
-        extraError = np.full(responseData, 0.5)
+        extraError = np.full(len(responseData), 0.5)
         self.setResponseData(responseData, responseError, extraError)
 
     def loadResponseFunctionData(self):
