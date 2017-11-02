@@ -11,45 +11,60 @@ from nebp_spectrum import FluxNEBP
 unfold = BonnerSphereTools()
 
 
-# responseData - the measured response from each bonner sphere
-unfold.responseData = np.loadtxt('data/bonner_data.txt')
+class GenericUnfolding(BonnerSphereTools):
 
-# responseError - the uncertainty associated with responseData due to statistics (as a percentage)
-unfold.responseError = np.sqrt(unfold.responseData) / unfold.responseData
+    def __init__(self):
+        BonnerSphereTools.__init__(self)
+        self.loadBonnerResponses()
+        self.loadResponseFunctionData()
+        self.runExperiment()
 
-# extraError - uncertainty in responseData due to causes other than statistics (as a percentage)
-unfold.extraError = [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]
+    def loadBonnerResponses(self):
+        responseData = np.loadtxt('data/bonner_data.txt')
+        responseError = np.sqrt(responseData) / responseData
+        extraError = np.full(responseData, 0.5)
+        self.setResponseData(responseData, responseError, extraError)
+
+    def loadResponseFunctionData(self):
+        genericData = np.loadtxt('data/generic_data.txt')
+        genericData = genericData.reshape(len(unfold.sphereSizes), -1, 4)
+        self.edges = np.concatenate((np.array([1E-11]), genericData[:, :, 1][0]))
+        responseFunctions = genericData[:, :, 2]
+        self.setResponseFunctionData(self.edges, responseFunctions)
+
+    def loadDefaultSpectrumTypical(self):
+        f = FluxTypical(1./7., 600.0)
+        flux = f.make_discrete(self.edges * 1E6, scaling=5E12)
+        dsErr = np.full(flux.shape, 0.5)
+        self.setDefaultSpectrum(self.edges, flux, dsErr)
+
+    def loadDefaultSpectrumNEBP(self):
+        f = FluxNEBP(250)
+        flux = f.change_bins(self.edges)
+        dsErr = np.full(flux.shape, 0.5)
+        self.setDefaultSpectrum(self.edges, flux, dsErr)
+
+    def runExperiment(self):
+        # run with typical spectrum for default spectrum
+        self.loadDefaultSpectrumTypical()
+        self.setRoutine('gravel')
+        self.run('gravel')
+        self.plotSpectra()
+        # run with nebp spectrum for default spectrum
+        self.loadDefaultSpectrumNEBP()
+        self.setRoutine('gravel')
+        self.run('gravel')
+        self.plotSpectra()
 
 
-# read in response function data from a text file and reshape based on number of spheres and energy groups
-genericData = np.loadtxt('data/generic_data.txt')
-genericData = genericData.reshape(len(unfold.sphereSizes), -1, 4)
-
-
-# rfErgEdges = the energy bin edges of the response functions
-edges = np.concatenate((np.array([1E-11]), genericData[:, :, 1][0]))
-unfold.rfErgEdges = edges
-
-# responses - the 2x2 matrix containing the responses for each sphere
-unfold.responses = genericData[:, :, 2]
-
+if __name__ == '__main__':
+    unfold = GenericUnfolding()
 
 '''
-PARAMETERS ASSOCIATED WIHT THE DEFAULT SPECTRUM
-dS - the default spectrum
-dsErr - the uncertainty associated with the default spectrum
-dsErgEdges - the energy bin edges of the default spectrum
-'''
-
-unfold.dS = np.ones(len(unfold.rfErgEdges))
-unfold.dsErr = np.full(unfold.dS.shape, 0.5)
-unfold.dsErgEdges = edges
-
-
 ###############################################################################
 # writing over the default spectrum
 
-if True:
+if False:
     f = FluxTypical(1./7., 600.0)
     flux = f.make_discrete(edges * 1E6, scaling=5E12)
     unfold.dS = flux
@@ -68,3 +83,4 @@ if False:
     unfold.routine = 'gravel'
     unfold.run('gravel')
     unfold.plotSpectra()
+'''
