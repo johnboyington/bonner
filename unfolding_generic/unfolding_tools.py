@@ -13,6 +13,9 @@ import time
 class BonnerSphereTools(object):
     def __init__(self):
         self.sphereIDs = None
+        
+        
+        
         self.sphereSizes = None
         self.responseData = None
         self.responseError = None
@@ -20,9 +23,7 @@ class BonnerSphereTools(object):
         self.correctionFactor = 0
         self.rfErgEdges = None
         self.responses = None
-        self.rfErgUnits = 'MeV'
         self.mode = 1
-        self.dsErgUnits = 'MeV'
         self.dS = None
         self.dsErr = None
         self.dsErgEdges = None
@@ -39,6 +40,72 @@ class BonnerSphereTools(object):
         self.solData = None
         self.solutions = []
         self.routine = 'maxed'
+    
+    def setDefSphereIDs(self):
+        # sphereIDs - a list of lists that contains an 8 character short ID and 16 char long ID for
+        #             naming each sphere
+        self.sphereIDs = [['bare    ', 'bareSphere      '],
+                          ['2in     ', '2inSphere       '],
+                          ['3in     ', '3inSphere       '],
+                          ['5in     ', '5inSphere       '],
+                          ['8in     ', '8inSphere       '],
+                          ['10in    ', '10inSphere      '],
+                          ['12in    ', '12inSphere      ']]
+    
+    def setDefSphereSizes(self):
+        # sphereSizes - the sphere diameters in inches
+        self.sphereSizes = [0.0, 2.0, 3.0, 5.0, 8.0, 10.0, 12.0]
+    
+    def setDefCorrectionFactor(self):
+        # correctionFactor - a factor by which to multiply measured data and absolute uncertainties
+        #                    entering a value of zero means data remains unchanged
+        self.correctionFactor = 0
+    
+    def setDefEnergyUnits(self):
+        # reErgUnits (or dsErgUnits) - the units of the response functions, either 'MeV', 'keV', or 'eV'
+        self.rfErgUnits = 'MeV'
+        self.dsErgUnits = 'MeV'
+    
+    def setDefMode(self):
+        # mode - the default spectrum input format
+        #   1 - (fluence rate per bin) / (width of the bin in E)     ~ dPhi / dE
+        #   2 - fluence rate per bin
+        #   3 - (fluence rate per bin) / (width of the bin in ln(E))     ~ E * dPhi / dE
+        self.mode = 1
+    
+    def setDefNames(self):
+                
+        self.ibuName = 'generic'
+        self.fmtName = 'generic'
+        self.fluName = 'generic'
+        self.outName = 'out'
+        self.inpName = 'generic'
+    
+    def setDefChiSqr(self):
+        self.finalChiSqr = len(self.sphereSizes)
+    
+    def setDefTemp(self):
+        self.temp = [1.0, 0.85]
+    
+    def setSolnStructure(self):
+        self.solnStructure = 2
+    
+    def setSolnRepresentation(self):
+        self.solnRepresentation = 1
+    
+    def setSolnScaling(self):
+        self.scaling = [0, 1, 1]
+    
+    
+        
+    
+    
+    
+    
+    
+    
+    
+        
 
     def makeStep(self, x, y):
         assert len(x) - 1== len(y), '{} - 1 != {}'.format(len(x), len(y))
