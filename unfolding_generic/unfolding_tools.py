@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 import time
+from spectrum import Spectrum
 
 
 class BonnerSphereTools(object):
@@ -21,7 +22,7 @@ class BonnerSphereTools(object):
         self.setDefEnergyUnits('MeV', 'MeV')
         self.setMode(1)
         self.setNames('generic')
-        self.setChiSqr(self, len(self.sphereSizes))
+        self.setChiSqr(len(self.sphereSizes))
         self.setTemp([1.0, 0.85])
         self.setSolnStructure(2)
         self.setSolnRepresentation(1)
@@ -108,10 +109,10 @@ class BonnerSphereTools(object):
         self.rfErgEdges = edges
         self.responses = responses
 
-    def setDefaultSpectrum(self, edges, ds, dse):
-        self.dsErgEdges = edges
-        self.dS = ds
-        self.dsErr = dse
+    def setDefaultSpectrum(self, ds):
+        self.dsErgEdges = ds.edges
+        self.dS = ds.values
+        self.dsErr = ds.error
 
     def makeStep(self, x, y):
         assert len(x) - 1 == len(y), '{} - 1 != {}'.format(len(x), len(y))
@@ -239,30 +240,33 @@ class BonnerSphereTools(object):
         os.rename('inp/{}.flu'.format(self.outName), 'out/{}.flu'.format(self.outName))
 
     def storeResult(self, label):
-        if self.solutions is None:
+        if not hasattr(self, 'solutions'):
             self.solutions = []
-        self.solutions.append((label, np.loadtxt('out/{}.flu'.format(self.outName), skiprows=3).T))
+        sol = Spectrum(np.loadtxt('out/{}.flu'.format(self.outName), skiprows=3), dfde=True)
+        self.solutions.append((label, sol))
 
     def run(self, label):
         self.writeInputFiles()
         self.unfold()
         self.storeResult(label)
 
-    def plotSpectra(self, ds=True):
+    def plotSpectra(self, name='generic', clear=True, ds=True):
         plt.figure(0)
-        for solution in self.solutions:
-            x, y = self.makeStep(self.dsErgEdges, solution[1][1])
-            plt.plot(x, y, label='{}'.format(solution[0]))
+        for label, s in self.solutions:
+            plt.plot(s.step_x, s.step_y, label='{}'.format(label))
         if ds:
             x, y = self.makeStep(self.dsErgEdges, self.dS[1:])
             plt.plot(x, y, label='Default Spectrum')
         plt.xscale('log')
         plt.yscale('log')
         plt.xlim(1E-8, 20)
+        plt.ylim(1E1, 1E13)
         plt.xlabel('Energy ${}$'.format(self.dsErgUnits))
         plt.ylabel('Fluence')
         plt.legend()
-        plt.savefig('{}_plot.png'.format(self.outName))
+        plt.savefig('{}_plot.png'.format(name))
+        if clear:
+            self.solutions = []
         plt.close()
 
     def clearRepo(self):
