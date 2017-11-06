@@ -36,7 +36,7 @@ class Spectrum(object):
 
     def estimate_error(self):
         '''If error is not given, '''
-        return np.full(len(self.values), 0.05)
+        return np.full(len(self.values), 0.5)
 
     def make_step(self):
         '''Make the binned flux data able to be plotted with plt.plot'''
@@ -62,7 +62,7 @@ class Spectrum(object):
             height = area / (bins[i+1] - bins[i])
             bin_values.append(height)
         new_data = np.array([bins, bin_values]).T
-        Spectrum.__init__(self, new_data)
+        Spectrum.__init__(self, new_data, dfde=True)
         return bin_values
 
     def plot(self):
