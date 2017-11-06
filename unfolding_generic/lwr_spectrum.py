@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 from scipy import constants
 from scipy.integrate import quad
 from scipy.optimize import minimize
+from spectrum import Spectrum
 
 
 # Boltzmann constant in eV/K
@@ -11,7 +12,7 @@ k = constants.value('Boltzmann constant in eV/K')
 
 
 
-class FluxTypical():
+class FluxTypical(Spectrum):
     """
     This class evaluate neutron flux at energy e. 
     At thermal energy range (e < 1eV), the flux is approximated by Maxwellian 
@@ -23,7 +24,9 @@ class FluxTypical():
     
     r : thermal-to-fast flux ratio
     """
-    def __init__(self, r = 2, thermal_t = 600.0):
+    def __init__(self, bins, s=1, r=2, thermal_t=600.0):
+        self.bins = bins
+        self.scaling = s
         self.e2 = 1e6
         self.thermal_t = thermal_t
 
@@ -43,6 +46,8 @@ class FluxTypical():
         self.c1 = 1.0
         self.c2 = self.m(self.e1) / self.f(self.e1)
         self.c3 = self.c2 * self.f(self.e2) / self.chi(self.e2)
+        vals = self.make_discrete(self.bins, self.scaling)
+        Spectrum.__init__(self, self.bins, vals, False)
 
     def balance(self, x):
         A = quad(self.m, 0, x)[0]
@@ -77,12 +82,12 @@ class FluxTypical():
         return bin_values
 
 
-if False:
+if __name__ == '__main__':
     # ratio of thermal flux to fast flux = 1e-5
     # neutron temperature = 600K
-    f = Flux(1./7., 600.0)
-    e = np.logspace(-8.5, 1.1, 20) * 10**6
-    v = f.make_discrete(e)
-    plt.step(e[1:] / 10**6, v)
+    e = np.logspace(-8.5, 1.1, 200) * 10**6
+    f = FluxTypical(e, 1, 1./7., 600.0)
+    plt.plot(f.step_x, f.step_y)
     plt.xscale('log')
     plt.yscale('log')
+    plt.show()

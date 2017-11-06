@@ -46,9 +46,6 @@ class Folding(object):
     def append_solution(self, sol):
         self.solutions.append(sol)
 
-    def run_all(self):
-        pass
-
 
 if __name__ == '__main__':
     # input response matrix

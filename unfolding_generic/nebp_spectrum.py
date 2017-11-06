@@ -32,10 +32,11 @@ class FluxNEBP(Spectrum):
         return C * self.power
 
 
-if False:
-    flux = FluxNEBP(250)
+if __name__ == '__main__':
+    f = FluxNEBP(250)
     new_bins = np.logspace(-11, 2, 100)
-    new_flux = flux.change_bins(new_bins)
-    plt.plot(new_bins, new_flux)
+    f.change_bins(new_bins)
+    plt.plot(f.step_x, f.step_y)
     plt.xscale('log')
     plt.yscale('log')
+    plt.show()
