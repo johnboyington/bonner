@@ -31,6 +31,7 @@ class Folding(object):
         for f in self.response_matrix:
             detector_responses.append(np.sum(self.spectrum.values * f) * self.scaling_factor)
         self.append_solution(detector_responses)
+        return detector_responses
 
     def plot(self):
         styles = ['ko', 'ro', 'kx']
@@ -60,7 +61,7 @@ if __name__ == '__main__':
     f = FluxNEBP(250)
     flux = f.change_bins(edges)
     dsErr = np.full(len(flux), 0.5)
-    s = Spectrum(np.array([edges, flux, dsErr]).T)
+    s = Spectrum(edges, flux, dsErr)
     print(f.values)
     print(rfs[0])
 

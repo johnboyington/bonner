@@ -5,18 +5,17 @@ from scipy.integrate import quad
 
 class Spectrum(object):
 
-    def __init__(self, data, S=1, dfde=False):
-        assert data.shape[1] == 2 or data.shape[1] == 3, 'Spectral data {} does not match input format'.format(data.shape)
+    def __init__(self, edges, values, error=False, S=1, dfde=False):
         self.scaling_factor = S
-        self.data = data
+        self.values = values
         self.num_bins, self.num_edges = self.count_bins()
-        self.edges = self.data[:, 0]
+        self.edges = edges
         self.values = self.scale_values()
         self.total_flux = np.sum(self.values)
-        if self.data.shape[1] == 3:
-            self.error = self.data[:, 2]
-        else:
+        if isinstance(error, bool):
             self.error = self.estimate_error()
+        else:
+            self.error = error
         self.widths = self.edges[1:] - self.edges[:-1]
         if dfde:
             self.normalized_values = self.values[1:]
@@ -27,12 +26,12 @@ class Spectrum(object):
 
     def count_bins(self):
         '''Counts the number of bins and bin edges in the data'''
-        l = len(self.data)
+        l = len(self.values)
         return l - 1, l
 
     def scale_values(self):
         '''Normalizes values to given scaling factor'''
-        return self.data[:, 1] * self.scaling_factor
+        return self.values * self.scaling_factor
 
     def estimate_error(self):
         '''If error is not given, '''
@@ -61,8 +60,7 @@ class Spectrum(object):
             area, err = quad(self.functional_form, bins[i], bins[i+1])
             height = area / (bins[i+1] - bins[i])
             bin_values.append(height)
-        new_data = np.array([bins, bin_values]).T
-        Spectrum.__init__(self, new_data, dfde=True)
+        Spectrum.__init__(self, bins, bin_values, dfde=True)
         return bin_values
 
     def plot(self):

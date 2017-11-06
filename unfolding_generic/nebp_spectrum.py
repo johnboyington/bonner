@@ -16,7 +16,9 @@ class FluxNEBP(Spectrum):
         self.power = P
         data = self.get_data()
         S = self.calc_scaling_factor()
-        Spectrum.__init__(self, data, S)
+        bins = data[:, 0]
+        vals = data[:, 1]
+        Spectrum.__init__(self, bins, vals, False, S)
 
     def get_data(self):
         '''Loads in neutron flux data from a text file'''
