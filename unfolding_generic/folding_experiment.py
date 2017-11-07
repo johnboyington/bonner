@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from nice_plots import Nice_Plots
 from lwr_spectrum import FluxTypical
 from nebp_spectrum import FluxNEBP
 from folding import Folding
@@ -8,6 +9,7 @@ from folding import Folding
 class Folding_Experiment(object):
 
     def __init__(self):
+        init_nice_plotting = Nice_Plots()
         self.normalize_experimental_responses()
         self.fold_typical()
         self.fold_nebp()
@@ -72,7 +74,7 @@ class Folding_Experiment(object):
         plt.ylabel('response $s^{-1}$')
         plt.xlabel('sphere size $in$')
         plt.legend()
-        plt.savefig('responses.png')
+        plt.savefig('responses.png', dpi=200)
 
 
 if __name__ == '__main__':
