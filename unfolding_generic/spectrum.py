@@ -11,7 +11,6 @@ class Spectrum(object):
         self.num_bins, self.num_edges = self.count_bins()
         self.edges = edges
         self.values = self.scale_values()
-        self.total_flux = np.sum(self.values)
         if isinstance(error, bool):
             self.error = self.estimate_error()
         else:
@@ -23,6 +22,7 @@ class Spectrum(object):
         else:
             self.normalized_values = self.values[1:] / self.widths
         self.step_x, self.step_y = self.make_step()
+        self.total_flux = np.sum(self.values)
 
     def count_bins(self):
         '''Counts the number of bins and bin edges in the data'''

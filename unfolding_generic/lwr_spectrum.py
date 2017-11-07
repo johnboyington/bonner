@@ -47,7 +47,9 @@ class FluxTypical(Spectrum):
         self.c2 = self.m(self.e1) / self.f(self.e1)
         self.c3 = self.c2 * self.f(self.e2) / self.chi(self.e2)
         vals = self.make_discrete(self.bins, self.scaling)
-        Spectrum.__init__(self, self.bins, vals, False)
+        print(len(self.bins))
+        print(len(vals))
+        Spectrum.__init__(self, self.bins, vals, False, dfde=True)
 
     def balance(self, x):
         A = quad(self.m, 0, x)[0]
@@ -85,7 +87,7 @@ class FluxTypical(Spectrum):
 if __name__ == '__main__':
     # ratio of thermal flux to fast flux = 1e-5
     # neutron temperature = 600K
-    e = np.logspace(-8.5, 1.1, 200) * 10**6
+    e = np.logspace(-8.5, 1.1, 100) * 10**6
     f = FluxTypical(e, 1, 1./7., 600.0)
     plt.plot(f.step_x, f.step_y)
     plt.xscale('log')

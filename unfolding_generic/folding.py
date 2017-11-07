@@ -59,8 +59,6 @@ if __name__ == '__main__':
     flux = f.change_bins(edges)
     dsErr = np.full(len(flux), 0.5)
     s = Spectrum(edges, flux, dsErr)
-    print(f.values)
-    print(rfs[0])
 
     # create and test object
     fold = Folding()
