@@ -25,7 +25,7 @@ def mcnpWriter(size, energy, particles=100000):
     s += 'SI6   0  {}\n'.format(size)
     s += 'SP6 -21  1\n'
     s += open('card2.txt', 'r').read()
-    with open('working/inp', 'w') as F:
+    with open('working/inp', 'w+') as F:
         F.write(s)
     print('Sphere Diameter {} in. Energy {:e} MeV written.'.format((size * 2) / 2.54, energy))
     return
@@ -44,7 +44,7 @@ def imp_spheres_mcnpWriter(size, energy, particles):
     s += 'SI6   0  {}\n'.format(size)
     s += 'SP6 -21  1\n'
     s += open('card2.txt', 'r').read()
-    with open('working/inp', 'w') as F:
+    with open('working/inp', 'w+') as F:
         F.write(s)
     print('Sphere Diameter {} in. Energy {:e} MeV written.'.format((size * 2) / 2.54, energy))
     return
