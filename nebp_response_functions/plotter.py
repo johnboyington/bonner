@@ -15,7 +15,7 @@ class Plotter(object):
         self.data = np.loadtxt('nebp_response_functions.txt').reshape(7, -1, 4)
 
     def set_coefficient(self):
-        self.c = 1
+        self.c = 1.774E-2 * (1/4)
 
     def set_colors(self, i):
         colors = ['blue', 'green', 'red', 'black', 'orange', 'violet', 'yellow']
@@ -30,13 +30,13 @@ class Plotter(object):
         for i, sphere in enumerate(self.data):
             sphere = sphere.T
             edges = np.insert(sphere[1], 0, 1E-11)
-            vals = np.insert(sphere[2], 0, 0)
-            err = np.insert(sphere[3], 0, 0) * vals
+            vals = sphere[2] * self.c
+            err = sphere[3] * vals
             s = Spectrum(edges, vals, err)
             c = self.set_colors(i)
             l = self.set_labels(i)
             plt.plot(s.stepu_x, s.stepu_y, color=c, label=l)
-            plt.errorbar(s.midpoints, s.values[1:], s.error[1:], linestyle='None', capsize=0, color=c)
+            plt.errorbar(s.midpoints, s.values, s.error, linestyle='None', capsize=0, color=c)
         plt.xscale('log')
         plt.yscale('log')
         plt.xlim(1E-9, 20)

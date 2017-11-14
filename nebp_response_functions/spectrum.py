@@ -16,7 +16,7 @@ class Spectrum(object):
         if isinstance(error, bool):
             self.error = self.estimate_error()
         else:
-            self.error = error
+            self.error = error * self.scaling_factor
         self.rel_error = self.error / self.values
         self.widths = self.edges[1:] - self.edges[:-1]
         self.midpoints = (self.edges[1:] + self.edges[:-1]) / 2
