@@ -4,7 +4,7 @@ import numpy as np
 
 class Generator(object):
     def __init__(self, test=False):
-        self.nps = 100000
+        self.nps = 1000000
         self.diameters = np.array([0, 2, 3, 5, 8, 10, 12])
         self.angles = np.cos(np.array([90, 80, 70, 60, 50, 40, 30, 20, 10, 5, 2, 1, 0.5, 0]) * (np.pi / 180))
         self.ang_dist = None
@@ -51,4 +51,4 @@ class Generator(object):
 
 
 if __name__ == '__main__':
-    generate = Generator(test=True)
+    generate = Generator()
