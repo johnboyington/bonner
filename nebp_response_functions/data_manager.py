@@ -29,7 +29,7 @@ class Generator(object):
     def run_experiment(self):
         for d in self.diameters:
             for e in range(len(self.groups) - 1):
-                self.ang_dist = self.set_angular_dist(e)
+                self.set_angular_dist(e+1)
                 sph = Sphere(d, self.groups[e], self.groups[e+1], self.angles, self.ang_dist, self.nps)
                 sph.run()
                 out = sph.output()
