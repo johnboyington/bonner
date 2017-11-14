@@ -29,17 +29,17 @@ class Sphere(object):
         s += 'SI2   '
         c = 0
         for a in self.angles:
-            s += '{}  '.format(a)
+            s += '{:12.6E}  '.format(a)
             c += 1
             if c % 5 == 0 and c != len(self.angles):
-                s += '\n'
+                s += '\n      '
         s += '\nSP2   '
         c = 0
         for p in self.probs:
-            s += '{}  '.format(p)
+            s += '{:12.6E}  '.format(p)
             c += 1
             if c % 5 == 0 and c != len(self.probs):
-                s += '\n'
+                s += '\n      '
         s += '\nSI3   0  2.54\n'
         s += 'SP3 -21  1\n'
         s += default_text[2]
@@ -68,7 +68,7 @@ class Sphere(object):
         return self.response
 
     def output(self):
-        args = int(self.size * (2 / 2.54)), self.erg_h, self.response[0], self.response[1]
+        args = int(round(self.size * (2 / 2.54))), self.erg_h, self.response[0], self.response[1]
         return '{:2d}   {:14.8e}   {:14.8e}   {:14.8e} '.format(*args)
 
 
