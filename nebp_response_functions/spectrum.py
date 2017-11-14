@@ -5,7 +5,9 @@ from scipy.integrate import quad
 
 class Spectrum(object):
 
-    def __init__(self, edges, values, error=False, S=1, dfde=False):
+    def __init__(self, edges, values, error=False, S=1, dfde=False, label=None):
+        assert len(edges) - 1 == len(values), '{} edges and {} values given.'.format(len(edges), len(values))
+        self.label = label
         self.scaling_factor = S
         self.values = values
         self.num_bins, self.num_edges = self.count_bins()
@@ -15,13 +17,14 @@ class Spectrum(object):
             self.error = self.estimate_error()
         else:
             self.error = error
+        self.rel_error = self.error / self.values
         self.widths = self.edges[1:] - self.edges[:-1]
         self.midpoints = (self.edges[1:] + self.edges[:-1]) / 2
         if dfde:
-            self.normalized_values = self.values[1:]
-            self.values = self.values[1:] * self.widths
+            self.normalized_values = self.values
+            self.values = self.values * self.widths
         else:
-            self.normalized_values = self.values[1:] / self.widths
+            self.normalized_values = self.values / self.widths
         self.step_x, self.step_y = self.make_step()
         self.stepu_x, self.stepu_y = self.make_step_unnormalized()
         self.total_flux = np.sum(self.values)
@@ -37,7 +40,7 @@ class Spectrum(object):
 
     def estimate_error(self):
         '''If error is not given, '''
-        return np.full(len(self.values), 0.5)
+        return np.full(len(self.values), 0.5) * self.scaling_factor
 
     def make_step(self):
         '''Make the binned flux data able to be plotted with plt.plot'''
@@ -48,8 +51,8 @@ class Spectrum(object):
 
     def make_step_unnormalized(self):
         '''Make the binned flux data able to be plotted with plt.plot'''
-        assert len(self.edges) - 1 == len(self.values[1:]), 'x - 1 != y'
-        Y = np.array([[yy, yy] for yy in np.array(self.values[1:])]).flatten()
+        assert len(self.edges) - 1 == len(self.values), 'x - 1 != y'
+        Y = np.array([[yy, yy] for yy in np.array(self.values)]).flatten()
         X = np.array([[xx, xx] for xx in np.array(self.edges)]).flatten()[1:-1]
         return X, Y
 
@@ -64,7 +67,7 @@ class Spectrum(object):
     def change_bins(self, bins):
         '''Makes discrete energy groups from continuous function above, given a desired bin structure.
         TODO: Change method of integration.'''
-        bin_values = [0.00]
+        bin_values = []
         for i in range(len(bins) - 1):
             area, err = quad(self.functional_form, bins[i], bins[i+1])
             height = area / (bins[i+1] - bins[i])
@@ -72,12 +75,32 @@ class Spectrum(object):
         Spectrum.__init__(self, bins, bin_values, dfde=True)
         return bin_values
 
-    def plot(self):
+    def plot(self, perMev=True):
         '''Plot flux data'''
         plt.figure(99)
-        plt.plot(self.step_x, self.step_y)
+        if perMev:
+            plt.plot(self.step_x, self.step_y)
+        else:
+            plt.plot(self.stepu_x, self.stepu_y)
         plt.xlabel('Energy MeV')
         plt.ylabel('Flux $MeV^{-1}cm^{-2}s^{-1}$')
         plt.xlim(1E-8, 20)
         plt.xscale('log')
         plt.yscale('log')
+        plt.legend()
+
+    def info(self):
+        s = '**************************************\n'
+        s += 'Information on spectrum: {}\n'.format(self.label)
+        s += '**************************************\n'
+        print(s)
+
+if True:
+    bins = np.array([1E-11, 1E-5, 0.5, 1, 20])
+    vals = np.array([0.1, 1, 10, 2])
+    err = vals * 0.05
+    s = Spectrum(bins, vals, err, 2, label='Test Spectrum')
+    s.plot()
+    s.change_bins(np.array([1E-8, 1E-4, 1E-2, 0.6, 1, 15, 20]))
+    s.plot()
+    s.info()
