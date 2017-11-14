@@ -17,7 +17,7 @@ class FluxNEBP(Spectrum):
         data = self.get_data()
         S = self.calc_scaling_factor()
         bins = data[:, 0]
-        vals = data[:, 1]
+        vals = data[:, 1][1:]
         Spectrum.__init__(self, bins, vals, False, S)
 
     def get_data(self):

@@ -47,8 +47,6 @@ class FluxTypical(Spectrum):
         self.c2 = self.m(self.e1) / self.f(self.e1)
         self.c3 = self.c2 * self.f(self.e2) / self.chi(self.e2)
         vals = self.make_discrete(self.bins, self.scaling)
-        print(len(self.bins))
-        print(len(vals))
         Spectrum.__init__(self, self.bins, vals, False, dfde=True)
 
     def balance(self, x):
@@ -76,7 +74,7 @@ class FluxTypical(Spectrum):
         '''
         Makes discrete energy groups from continuous function above.
         '''
-        bin_values = [0.00]
+        bin_values = []
         for i in range(len(bins) - 1):
             area, err = quad(self.compute_flux, bins[i], bins[i+1])
             height = area / (bins[i+1] - bins[i])

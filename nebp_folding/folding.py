@@ -49,7 +49,7 @@ class Folding(object):
 
 if __name__ == '__main__':
     # input response matrix
-    genericData = np.loadtxt('data/generic_data.txt')
+    genericData = np.loadtxt('generic_data.txt')
     genericData = genericData.reshape(7, -1, 4)
     edges = np.concatenate((np.array([1E-11]), genericData[:, :, 1][0]))
     rfs = genericData[:, :, 2]
