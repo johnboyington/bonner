@@ -72,7 +72,7 @@ class Spectrum(object):
             area, err = quad(self.functional_form, bins[i], bins[i+1])
             height = area / (bins[i+1] - bins[i])
             bin_values.append(height)
-        Spectrum.__init__(self, bins, bin_values, dfde=True)
+        Spectrum.__init__(self, bins, bin_values, dfde=True, label=self.label)
         return bin_values
 
     def plot(self, perMev=True):
@@ -90,12 +90,22 @@ class Spectrum(object):
         plt.legend()
 
     def info(self):
-        s = '**************************************\n'
+        s = '********************************************\n'
         s += 'Information on spectrum: {}\n'.format(self.label)
-        s += '**************************************\n'
+        s += '*******************************************\n'
+        s += 'Number of Bins: {}\n'.format(self.num_bins)
+        s += 'Number of Bin Edges: {}\n'.format(self.num_edges)
+        s += 'Scaling Factor: {}\n'.format(self.scaling_factor)
+        s += 'Total Flux: {:8.5e}\n'.format(self.total_flux)
+        s += '*******************************************\n'
+        s += ' |  Bin Edges  | Values     |\n'
+        for i in range(len(self.edges)):
+            s += ' |  {:8.5e}             |\n'.format(self.edges[i])
+            if i != len(self.values - 1):
+                s += ' |              {:8.5e} |\n'.format(self.values[i])
         print(s)
 
-if True:
+if __name__ == '__main__':
     bins = np.array([1E-11, 1E-5, 0.5, 1, 20])
     vals = np.array([0.1, 1, 10, 2])
     err = vals * 0.05
