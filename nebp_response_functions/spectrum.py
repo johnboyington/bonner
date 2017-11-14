@@ -16,6 +16,7 @@ class Spectrum(object):
         else:
             self.error = error
         self.widths = self.edges[1:] - self.edges[:-1]
+        self.midpoints = (self.edges[1:] + self.edges[:-1]) / 2
         if dfde:
             self.normalized_values = self.values[1:]
             self.values = self.values[1:] * self.widths
