@@ -41,7 +41,7 @@ class Plotter(object):
         plt.yscale('log')
         plt.xlim(1E-9, 20)
         plt.xlabel('energy $MeV$')
-        plt.ylabel('response $cm^{-2}$')
+        plt.ylabel('response $cm^{2}$')
         plt.legend(loc=3)
         plt.savefig('nebp_response_functions.png', dpi=250)
 

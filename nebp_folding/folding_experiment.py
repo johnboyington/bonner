@@ -16,6 +16,7 @@ class Folding_Experiment(object):
         self.plot_theoretical()
         self.plot_unscaled()
         self.plot_scaled()
+        self.plot_diffs()
         if False:
             print(self.experimental_responses)
             print(self.typical_response)
@@ -88,7 +89,7 @@ class Folding_Experiment(object):
         plt.plot(sizes, self.nebp_response, 'ko', label='theoretical nebp')
         plt.plot(sizes, self.experimental_responses, 'ro', label='experimental (scaled *100)')
         plt.legend()
-        plt.savefig('responses_scaled_exp.png', dpi=250)
+        plt.savefig('responses_unscaled_exp.png', dpi=250)
         plt.close()
 
     def plot_scaled(self):
@@ -102,6 +103,20 @@ class Folding_Experiment(object):
         plt.plot(sizes, self.experimental_responses * 100, 'ro', label='experimental (scaled *100)')
         plt.legend()
         plt.savefig('responses_scaled_exp.png', dpi=250)
+        plt.close()
+
+    def plot_diffs(self):
+        diffs = self.nebp_response - (self.experimental_responses * 100)
+        plt.figure(53)
+        # plt.yscale('log')
+        plt.ylabel('response $s^{-1}$')
+        plt.xlabel('sphere size $in$')
+        sizes = [0.0, 2.0, 3.0, 5.0, 8.0, 10.0, 12.0]
+        plt.plot(sizes, self.nebp_response, 'ko', label='theoretical nebp')
+        plt.plot(sizes, self.experimental_responses * 100, 'ro', label='experimental (scaled *100)')
+        plt.plot(sizes, diffs, 'g^', label='difference')
+        plt.legend()
+        plt.savefig('responses_error.png', dpi=250)
         plt.close()
 
 
