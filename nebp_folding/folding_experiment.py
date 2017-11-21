@@ -8,19 +8,16 @@ from folding import Folding
 
 class Folding_Experiment(object):
 
-    def __init__(self):
+    def __init__(self, plot_all=False):
         Nice_Plots()
         self.normalize_experimental_responses()
         self.fold_typical()
         self.fold_nebp()
-        self.plot_theoretical()
         self.plot_unscaled()
-        self.plot_scaled()
-        self.plot_diffs()
-        if False:
-            print(self.experimental_responses)
-            print(self.typical_response)
-            print(self.nebp_response)
+        if plot_all:
+            self.plot_theoretical()
+            self.plot_scaled()
+            self.plot_diffs()
 
     def normalize_experimental_responses(self):
         s = 5 * 60  # 5 minutes
@@ -87,7 +84,7 @@ class Folding_Experiment(object):
         sizes = [0.0, 2.0, 3.0, 5.0, 8.0, 10.0, 12.0]
         plt.plot(sizes, self.typical_response, 'kx', label='theoretical typical')
         plt.plot(sizes, self.nebp_response, 'ko', label='theoretical nebp')
-        plt.plot(sizes, self.experimental_responses, 'ro', label='experimental (scaled *100)')
+        plt.plot(sizes, self.experimental_responses, 'ro', label='experimental')
         plt.legend()
         plt.savefig('responses_unscaled_exp.png', dpi=250)
         plt.close()
@@ -100,20 +97,18 @@ class Folding_Experiment(object):
         sizes = [0.0, 2.0, 3.0, 5.0, 8.0, 10.0, 12.0]
         plt.plot(sizes, self.typical_response, 'kx', label='theoretical typical')
         plt.plot(sizes, self.nebp_response, 'ko', label='theoretical nebp')
-        plt.plot(sizes, self.experimental_responses * 100, 'ro', label='experimental (scaled *100)')
+        plt.plot(sizes, self.experimental_responses * 100, 'ro', label='experimental (scaled * 100)')
         plt.legend()
         plt.savefig('responses_scaled_exp.png', dpi=250)
         plt.close()
 
     def plot_diffs(self):
-        diffs = self.nebp_response - (self.experimental_responses * 100)
+        diffs = 100 * (self.nebp_response - (self.experimental_responses * 100)) / self.nebp_response
         plt.figure(53)
         # plt.yscale('log')
-        plt.ylabel('response $s^{-1}$')
+        plt.ylabel('relative percent error')
         plt.xlabel('sphere size $in$')
         sizes = [0.0, 2.0, 3.0, 5.0, 8.0, 10.0, 12.0]
-        plt.plot(sizes, self.nebp_response, 'ko', label='theoretical nebp')
-        plt.plot(sizes, self.experimental_responses * 100, 'ro', label='experimental (scaled *100)')
         plt.plot(sizes, diffs, 'g^', label='difference')
         plt.legend()
         plt.savefig('responses_error.png', dpi=250)
