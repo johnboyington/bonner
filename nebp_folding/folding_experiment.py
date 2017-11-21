@@ -74,7 +74,6 @@ class Folding_Experiment(object):
 
     def plot_theoretical(self):
         plt.figure(50)
-        # plt.yscale('log')
         plt.ylabel('response $s^{-1}$')
         plt.xlabel('sphere size $in$')
         sizes = [0.0, 2.0, 3.0, 5.0, 8.0, 10.0, 12.0]
@@ -86,7 +85,6 @@ class Folding_Experiment(object):
 
     def plot_responses(self):
         plt.figure(51)
-        # plt.yscale('log')
         plt.ylabel('response $s^{-1}$')
         plt.xlabel('sphere size $in$')
         sizes = [0.0, 2.0, 3.0, 5.0, 8.0, 10.0, 12.0]
@@ -98,7 +96,7 @@ class Folding_Experiment(object):
         plt.close()
 
     def plot_diffs(self):
-        diffs = 100 * (self.nebp_response - self.experimental_responses) / self.nebp_response
+        diffs = abs(100 * (self.experimental_responses - self.nebp_response) / self.experimental_responses)
         plt.figure(52)
         plt.ylabel('relative percent error')
         plt.xlabel('sphere size $in$')
