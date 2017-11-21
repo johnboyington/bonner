@@ -10,14 +10,19 @@ class Folding_Experiment(object):
 
     def __init__(self, plot_all=False):
         Nice_Plots()
+        self.set_coefficient()
+        self.get_robert_data()
         self.normalize_experimental_responses()
         self.fold_typical()
         self.fold_nebp()
-        self.plot_unscaled()
+        self.plot_responses()
         if plot_all:
             self.plot_theoretical()
-            self.plot_scaled()
             self.plot_diffs()
+            self.plot_robert()
+
+    def set_coefficient(self):
+        self.c = 1.774E-2 * (1/4)
 
     def normalize_experimental_responses(self):
         s = 5 * 60  # 5 minutes
@@ -26,6 +31,9 @@ class Folding_Experiment(object):
         # efficiency_correction
         e = 1
         self.experimental_responses = r * powers * (1 / e)
+
+    def get_robert_data(self):
+        self.robert_responses = np.array([1935, 8823, 11049, 6825, 2544, 1402, 896]) * 0.18
 
     def fold_typical(self):
         # input response matrix
@@ -40,7 +48,7 @@ class Folding_Experiment(object):
         f.change_bins(edges)
 
         # create and test object
-        fold = Folding()
+        fold = Folding(sf=self.c)
         fold.set_spectrum(f)
         print('Typical total flux: {}'.format(fold.spectrum.total_flux))
         fold.set_response_functions(rfs)
@@ -58,7 +66,7 @@ class Folding_Experiment(object):
         f.change_bins(edges)
 
         # create and test object
-        fold = Folding()
+        fold = Folding(sf=self.c)
         fold.set_spectrum(f)
         print('NEBP total flux:    {}'.format(fold.spectrum.total_flux))
         fold.set_response_functions(rfs)
@@ -66,19 +74,19 @@ class Folding_Experiment(object):
 
     def plot_theoretical(self):
         plt.figure(50)
-        plt.yscale('log')
+        # plt.yscale('log')
         plt.ylabel('response $s^{-1}$')
         plt.xlabel('sphere size $in$')
         sizes = [0.0, 2.0, 3.0, 5.0, 8.0, 10.0, 12.0]
         plt.plot(sizes, self.typical_response, 'kx', label='theoretical typical')
         plt.plot(sizes, self.nebp_response, 'ko', label='theoretical nebp')
         plt.legend()
-        plt.savefig('responses_no_exp.png', dpi=250)
+        plt.savefig('responses_theoretical.png', dpi=250)
         plt.close()
 
-    def plot_unscaled(self):
+    def plot_responses(self):
         plt.figure(51)
-        plt.yscale('log')
+        # plt.yscale('log')
         plt.ylabel('response $s^{-1}$')
         plt.xlabel('sphere size $in$')
         sizes = [0.0, 2.0, 3.0, 5.0, 8.0, 10.0, 12.0]
@@ -86,26 +94,12 @@ class Folding_Experiment(object):
         plt.plot(sizes, self.nebp_response, 'ko', label='theoretical nebp')
         plt.plot(sizes, self.experimental_responses, 'ro', label='experimental')
         plt.legend()
-        plt.savefig('responses_unscaled_exp.png', dpi=250)
-        plt.close()
-
-    def plot_scaled(self):
-        plt.figure(52)
-        plt.yscale('log')
-        plt.ylabel('response $s^{-1}$')
-        plt.xlabel('sphere size $in$')
-        sizes = [0.0, 2.0, 3.0, 5.0, 8.0, 10.0, 12.0]
-        plt.plot(sizes, self.typical_response, 'kx', label='theoretical typical')
-        plt.plot(sizes, self.nebp_response, 'ko', label='theoretical nebp')
-        plt.plot(sizes, self.experimental_responses * 100, 'ro', label='experimental (scaled * 100)')
-        plt.legend()
-        plt.savefig('responses_scaled_exp.png', dpi=250)
+        plt.savefig('responses_comparison.png', dpi=250)
         plt.close()
 
     def plot_diffs(self):
-        diffs = 100 * (self.nebp_response - (self.experimental_responses * 100)) / self.nebp_response
-        plt.figure(53)
-        # plt.yscale('log')
+        diffs = 100 * (self.nebp_response - self.experimental_responses) / self.nebp_response
+        plt.figure(52)
         plt.ylabel('relative percent error')
         plt.xlabel('sphere size $in$')
         sizes = [0.0, 2.0, 3.0, 5.0, 8.0, 10.0, 12.0]
@@ -114,6 +108,19 @@ class Folding_Experiment(object):
         plt.savefig('responses_error.png', dpi=250)
         plt.close()
 
+    def plot_robert(self):
+        plt.figure(53)
+        plt.ylabel('relative percent error')
+        plt.xlabel('sphere size $in$')
+        sizes = [0.0, 2.0, 3.0, 5.0, 8.0, 10.0, 12.0]
+        plt.plot(sizes, self.typical_response, 'kx', label='theoretical typical')
+        plt.plot(sizes, self.nebp_response, 'ko', label='theoretical nebp')
+        plt.plot(sizes, self.experimental_responses, 'ro', label='experimental')
+        plt.plot(sizes, self.robert_responses, 'bo', label='robert experiment')
+        plt.legend()
+        plt.savefig('responses_robert.png', dpi=250)
+        plt.close()
+
 
 if __name__ == '__main__':
-    do = Folding_Experiment()
+    do = Folding_Experiment(plot_all=True)
