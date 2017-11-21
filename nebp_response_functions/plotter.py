@@ -45,7 +45,6 @@ class Plotter(object):
         plt.xscale('log')
         plt.yscale('log')
         plt.xlim(1E-8, 20)
-        plt.ylim(1E-5, 2.5E-1)
         plt.xlabel('energy $MeV$')
         plt.ylabel('response $cm^{2}$')
         plt.legend(loc=3)
@@ -66,7 +65,7 @@ class Plotter(object):
             plt.errorbar(s.midpoints, s.values, s.error, linestyle='None', capsize=0, color=c)
             sphere = self.decker_data[i].T
             edges = np.insert(sphere[1], 0, 1E-11)
-            vals = sphere[2] * self.c
+            vals = sphere[2]
             err = sphere[3] * vals
             s = Spectrum(edges, vals, err)
             c = self.set_colors(i)
