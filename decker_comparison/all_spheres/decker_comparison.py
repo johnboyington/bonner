@@ -64,6 +64,7 @@ plt.title('Decker Bonner Sphere Response Functions')
 plt.xlabel('Energy (MeV)')
 plt.ylabel('Response (cm$^{2}$)')
 
+s = ''
 #plot decker data
 for sphere in range(7):
     L = sphere * 26
@@ -71,6 +72,10 @@ for sphere in range(7):
     data = decker_data[L:R]
     plt.plot(erg_groups, data[:,0], color=spheres[sphere][1], label=spheres[sphere][2], marker=spheres[sphere][3], fillstyle=u'none')
     plt.errorbar(erg_groups, data[:,0], data[:,0] * data[:,1], color=spheres[sphere][1], linestyle="None")
+    for i, g in enumerate(erg_groups):
+        s += '{:2d}   {:14.8e}   {:14.8e}   {:14.8e} \n'.format(spheres[sphere][0], g, data[i][0], data[i][1])
+with open('decker_data_new.txt', 'w+') as f:
+    f.write(s)
 
 
 plt.legend()
