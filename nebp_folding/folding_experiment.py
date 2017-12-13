@@ -73,6 +73,13 @@ class Folding_Experiment(object):
         fold.set_response_functions(rfs)
         self.nebp_response = fold.fold()
 
+        # store data
+        s = ''
+        for r in self.nebp_response:
+            s += '{}\n'.format(r)
+        with open('nebp_theoretical_response.txt', 'w+') as F:
+            F.write(s)
+
     def plot_theoretical(self):
         plt.figure(50)
         plt.ylabel('response $s^{-1}$')
