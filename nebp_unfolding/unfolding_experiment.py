@@ -18,12 +18,13 @@ class Experiment(object):
 
     def load_responses(self):
         print('Loading Detector Response Data...')
-        responseData = np.loadtxt('bonner_data.txt')
-        responseError = np.sqrt(responseData) / responseData
-        extraError = np.full(len(responseData), 0.5)
-        print('Experimental Response Data Loaded')
-        if False:
-            print('Theoretical Response Data Loaded')
+        self.experimental_response = np.loadtxt('bonner_data.txt')
+        # used in unfolding but I want to move these to the unfolding class
+        # responseError = np.sqrt(self.experimental_response) / responseData
+        # extraError = np.full(len(self.experimental_response), 0.5)
+        print('    Experimental Response Data Loaded')
+        self.theoretical_response = np.loadtxt('nebp_theoretical_response.txt')
+        print('    Theoretical Response Data Loaded\n')
 
     def load_response_functions(self):
         print('Loading Response Function Data...')
@@ -31,18 +32,18 @@ class Experiment(object):
         data = data.reshape(7, -1, 4)
         self.edges = np.concatenate((np.array([1E-11]), data[:, :, 1][0]))
         self.rf = data[:, :, 2]
-        print('Response Function Data Loaded')
+        print('    Response Function Data Loaded\n')
 
     def load_typical_spectrum(self):
         print('Loading Typical LWR Spectrum...')
         sf = 294858.046942 / 0.0263292381867
         self.typical_spectrum = FluxTypical(self.edges, sf, 1./7., 600.0).change_bins(self.edges)
-        print('Typical LWR Spectrum Loaded')
+        print('    Typical LWR Spectrum Loaded\n')
 
     def load_nebp_spectrum(self):
         print('Loading NEBP Spectrum...')
         self.nebp_spectrum = FluxNEBP(250).change_bins(self.edges)
-        print('NEBP Spectrum Loaded')
+        print('    NEBP Spectrum Loaded\n')
     
     def load_data(self):
         self.load_responses()
