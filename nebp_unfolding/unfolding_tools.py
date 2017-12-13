@@ -189,8 +189,8 @@ class Unfolding(object):
         elif self.dsErgUnits == 'keV':
             self.dsIEU = 2
         fluString = 'Default Spectrum for Bonner Sphere Unfolding\n'
-        fluString += '   {}   {}\n'.format(self.mode, self.dsIEU)
-        fluString += '       2         {}        {}       {:4.3E}\n'.format(
+        fluString += '       {}          {}\n'.format(self.mode, self.dsIEU)
+        fluString += '       2        {}        {}   {:4.3E}\n'.format(
                 self.ds.num_bins, self.ds.num_bins, self.ds.edges[-1])
         for i in range(self.ds.num_bins):
             fluString += '{:4.3E}  {:4.3E}  {:4.3E}\n'.format(self.ds.edges[i], self.ds.values[i], self.ds.error[i])
