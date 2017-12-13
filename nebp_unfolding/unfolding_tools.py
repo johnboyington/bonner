@@ -21,13 +21,13 @@ class Unfolding(object):
         self.setCorrectionFactor(0)
         self.setDefEnergyUnits('MeV', 'MeV')
         self.setMode(1)
-        self.setNames('generic')
+        self.set_names('generic')
         self.setChiSqr(len(self.sphereSizes))
         self.setTemp([1.0, 0.85])
         self.setSolnStructure(2)
         self.setSolnRepresentation(1)
         self.setSolnScaling([0, 1, 1])
-        self.setRoutine('maxed')
+        self.set_routine('maxed')
 
     def setSphereIDs(self, ids):
         # sphereIDs - a list of lists that contains an 8 character short ID and 16 char long ID for
@@ -55,7 +55,7 @@ class Unfolding(object):
         #   3 - (fluence rate per bin) / (width of the bin in ln(E))     ~ E * dPhi / dE
         self.mode = m
 
-    def setNames(self, name):
+    def set_names(self, name):
         self.setIbuName(name)
         self.setFmtName(name)
         self.setFluName(name)
@@ -69,7 +69,7 @@ class Unfolding(object):
         self.fmtName = name
 
     def setFluName(self, name):
-        self.fluName = 'generic'
+        self.fluName = name
 
     def setOutName(self, name):
         self.outName = name
@@ -92,24 +92,25 @@ class Unfolding(object):
     def setSolnScaling(self, s):
         self.scaling = s
 
-    def setRoutine(self, r):
+    def set_routine(self, r):
         self.routine = r
 
-    def setResponseData(self, data, error, extraError):
+    def set_responses(self, data):
         # responseData - the measured response from each bonner sphere
         # responseError - the uncertainty associated with responseData due to statistics (as a percentage)
         # extraError - uncertainty in responseData due to causes other than statistics (as a percentage)
         self.responseData = data
-        self.responseError = error
-        self.extraError = extraError
+        self.responseError = np.sqrt(data) / data
+        self.extraError = np.full(len(data), 0.5)
 
-    def setResponseFunctionData(self, edges, responses):
+    def set_rf(self, edges, responses):
         # rfErgEdges = the energy bin edges of the response functions
         # responses - the 2D matrix containing the responses for each sphere
         self.rfErgEdges = edges
         self.responses = responses
 
-    def setDefaultSpectrum(self, ds):
+    def set_ds(self, ds):
+        # set the default spectrum
         self.ds = ds
 
     def makeStep(self, x, y):
@@ -191,7 +192,7 @@ class Unfolding(object):
         fluString += '   {}   {}\n'.format(self.mode, self.dsIEU)
         fluString += '       2         {}        {}       {:4.3E}\n'.format(
                 self.ds.num_bins, self.ds.num_bins, self.ds.edges[-1])
-        for i in range(len(self.ds.values) - 1):
+        for i in range(self.ds.num_bins):
             fluString += '{:4.3E}  {:4.3E}  {:4.3E}\n'.format(self.ds.edges[i], self.ds.values[i], self.ds.error[i])
         with open('inp/{}.flu'.format(self.fluName), 'w+') as F:
             F.write(fluString)
@@ -230,7 +231,7 @@ class Unfolding(object):
             os.mkdir('out')
         except:
             pass
-        time.sleep(5)
+        # time.sleep(5)
         os.rename('inp/{}.txt'.format(self.outName), 'out/{}.txt'.format(self.outName))
         if self.routine == 'maxed':
             os.rename('inp/{}.par'.format(self.outName), 'out/{}.par'.format(self.outName))
@@ -240,8 +241,9 @@ class Unfolding(object):
     def storeResult(self, label):
         if not hasattr(self, 'solutions'):
             self.solutions = []
-        sol = Spectrum(np.loadtxt('out/{}.flu'.format(self.outName), skiprows=3), dfde=True)
-        self.solutions.append((label, sol))
+        sol = np.loadtxt('out/{}.flu'.format(self.outName), skiprows=3)
+        with open('{}_unfolded.txt'.format(label), 'w+') as F:
+            F.write(sol)
 
     def run(self, label):
         self.writeInputFiles()

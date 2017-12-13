@@ -10,8 +10,8 @@ class Spectrum(object):
         self.label = label
         self.scaling_factor = S
         self.values = values
-        self.num_bins, self.num_edges = self.count_bins()
         self.edges = edges
+        self.num_bins, self.num_edges = self.count_bins()
         self.values = self.scale_values()
         if isinstance(error, bool):
             self.error = self.estimate_error()
@@ -31,7 +31,7 @@ class Spectrum(object):
 
     def count_bins(self):
         '''Counts the number of bins and bin edges in the data'''
-        l = len(self.values)
+        l = len(self.edges)
         return l - 1, l
 
     def scale_values(self):
