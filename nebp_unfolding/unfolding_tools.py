@@ -5,7 +5,7 @@ import time
 from spectrum import Spectrum
 
 
-class BonnerSphereTools(object):
+class Unfolding(object):
     '''Used to create functions and classes useful for the spectral unfolding.'''
 
     def __init__(self):
@@ -110,9 +110,7 @@ class BonnerSphereTools(object):
         self.responses = responses
 
     def setDefaultSpectrum(self, ds):
-        self.dsErgEdges = ds.edges
-        self.dS = ds.values
-        self.dsErr = ds.error
+        self.ds = ds
 
     def makeStep(self, x, y):
         assert len(x) - 1 == len(y), '{} - 1 != {}'.format(len(x), len(y))
@@ -192,9 +190,9 @@ class BonnerSphereTools(object):
         fluString = 'Default Spectrum for Bonner Sphere Unfolding\n'
         fluString += '   {}   {}\n'.format(self.mode, self.dsIEU)
         fluString += '       2         {}        {}       {:4.3E}\n'.format(
-                len(self.dS) - 1, len(self.dS) - 1, max(self.dsErgEdges))
-        for i in range(len(self.dS) - 1):
-            fluString += '{:4.3E}  {:4.3E}  {:4.3E}\n'.format(self.dsErgEdges[i], self.dS[i], self.dsErr[i])
+                self.ds.num_bins, self.ds.num_bins, self.ds.edges[-1])
+        for i in range(len(self.ds.values) - 1):
+            fluString += '{:4.3E}  {:4.3E}  {:4.3E}\n'.format(self.ds.edges[i], self.ds.values[i], self.ds.error[i])
         with open('inp/{}.flu'.format(self.fluName), 'w+') as F:
             F.write(fluString)
         return
@@ -255,8 +253,7 @@ class BonnerSphereTools(object):
         for label, s in self.solutions:
             plt.plot(s.step_x, s.step_y, label='{}'.format(label))
         if ds:
-            x, y = self.makeStep(self.dsErgEdges, self.dS[1:])
-            plt.plot(x, y, label='Default Spectrum')
+            plt.plot(self.ds.step_x, self.ds.step_y, label='Default Spectrum')
         plt.xscale('log')
         plt.yscale('log')
         plt.xlim(1E-8, 20)
