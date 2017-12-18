@@ -1,7 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import os
-from spectrum import Spectrum
+import subprocess
+import time
 
 
 class Unfolding(object):
@@ -72,7 +73,7 @@ class Unfolding(object):
         self.fluName = name
 
     def setOutName(self, name):
-        self.outName = name
+        self.outName = name[:-1] + 'o'
 
     def setInpName(self, name):
         self.inpName = name
@@ -169,7 +170,7 @@ class Unfolding(object):
 
         for i, names in enumerate(self.sphereIDs):
             fmtString += '{}  {}\n'.format(names[0], names[1])
-            fmtString += ' 1.000E+00      cm^2         0         0    3    1    1    0\n '
+            fmtString += ' 1.000E+00      cm^2         0         0    3    1    1    0\n'
 
             for j, resp in enumerate(self.responses[i]):
                 fmtString += ' {:4.3E}'.format(resp)
@@ -231,23 +232,12 @@ class Unfolding(object):
     def unfold(self):
         self.exe = self.getExe()
         os.chdir('inp')
-        os.system('wine {} {}.inp'.format(self.exe, self.inpName))
+        with open('dump.txt', 'a+') as dump:
+            subprocess.call(['wine', '{}'.format(self.exe), '{}.inp'.format(self.inpName)], stdout=dump)
         os.chdir('..')
-        try:
-            os.mkdir('out')
-        except:
-            pass
-        # time.sleep(5)
-        os.rename('inp/{}.txt'.format(self.outName), 'out/{}.txt'.format(self.outName))
-        if self.routine == 'maxed':
-            os.rename('inp/{}.par'.format(self.outName), 'out/{}.par'.format(self.outName))
-        os.rename('inp/{}.plo'.format(self.outName), 'out/{}.plo'.format(self.outName))
-        os.rename('inp/{}.flu'.format(self.outName), 'out/{}.flu'.format(self.outName))
 
     def storeResult(self, label):
-        if not hasattr(self, 'solutions'):
-            self.solutions = []
-        sol = np.loadtxt('out/{}.flu'.format(self.outName), skiprows=3)
+        sol = np.loadtxt('inp/{}.flu'.format(self.outName), skiprows=3)
         s = ''
         for i in sol:
             s += '{:10.6e}  {:10.6e}  {:10.6e}\n'.format(*i)

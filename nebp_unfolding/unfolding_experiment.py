@@ -106,9 +106,14 @@ class Experiment(object):
         self.unfolding.run('th_ty_mx')
 
     def run_all(self):
+        print('\n')
+        print('Running Experimental Responses, NEBP Spectrum...')
         self.run_experiment_ex_ne()
+        print('Running Experimental Responses, Typical LWR Spectrum...')
         self.run_experiment_ex_ty()
+        print('Running Theoretical Responses, NEBP Spectrum...')
         self.run_experiment_th_ne()
+        print('Running Theoretical Responses, Typical LWR Spectrum...')
         self.run_experiment_th_ty()
+        print('Finished Unfolding')
         shutil.rmtree('inp')
-        shutil.rmtree('out')
