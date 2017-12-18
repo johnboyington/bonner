@@ -3,13 +3,18 @@ import matplotlib.pyplot as plt
 from spectrum import Spectrum
 from lwr_spectrum import FluxTypical
 from nebp_spectrum import FluxNEBP
+from nice_plots import Nice_Plots
 
 
 class Plot(object):
 
     def __init__(self):
         self.load_data()
+        print('Producing Plots...')
+        Nice_Plots()
         self.plot_experimental_nebp()
+        self.plot_theoretical_nebp()
+        print('   Finished Plotting')
 
     def load_data(self):
         # load scale56 bin edges
@@ -61,11 +66,76 @@ class Plot(object):
         plt.figure(0)
         plt.xscale('log')
         plt.yscale('log')
+        plt.xlabel('Energy $MeV$')
+        plt.ylabel('Flux $cm^{-2}s^{-1}MeV^{-1}$')
         plt.plot(self.nebp_spectrum.step_x, self.nebp_spectrum.step_y, 'k', label='default spectrum')
         plt.plot(self.data['ex_ne_gr'].step_x, self.data['ex_ne_gr'].step_y, 'r', label='gravel')
-        plt.plot(self.data['ex_ne_mx'].step_x, self.data['ex_ne_mx'].step_y, 'r--', label='maxed')
+        plt.plot(self.data['ex_ne_mx'].step_x, self.data['ex_ne_mx'].step_y, 'b', label='maxed')
         plt.legend()
         plt.savefig('unfolded.png', dpi=300)
+        plt.close()
+
+        # only maxed
+        plt.figure(1)
+        plt.xscale('log')
+        plt.yscale('log')
+        plt.xlabel('Energy $MeV$')
+        plt.ylabel('Flux $cm^{-2}s^{-1}MeV^{-1}$')
+        plt.plot(self.nebp_spectrum.step_x, self.nebp_spectrum.step_y, 'k', label='default spectrum')
+        plt.plot(self.data['ex_ne_mx'].step_x, self.data['ex_ne_mx'].step_y, 'b', label='maxed')
+        plt.legend()
+        plt.savefig('unfolded_maxed_only.png', dpi=300)
+        plt.close()
+
+        # only gravel
+        plt.figure(2)
+        plt.xscale('log')
+        plt.yscale('log')
+        plt.xlabel('Energy $MeV$')
+        plt.ylabel('Flux $cm^{-2}s^{-1}MeV^{-1}$')
+        plt.xlabel('Energy $MeV$')
+        plt.ylabel('Flux $cm^{-2}s^{-1}MeV^{-1}$')
+        plt.plot(self.nebp_spectrum.step_x, self.nebp_spectrum.step_y, 'k', label='default spectrum')
+        plt.plot(self.data['ex_ne_gr'].step_x, self.data['ex_ne_gr'].step_y, 'r', label='gravel')
+        plt.legend()
+        plt.savefig('unfolded_gravel_only.png', dpi=300)
+        plt.close()
+
+    def plot_theoretical_nebp(self):
+        plt.figure(0)
+        plt.xscale('log')
+        plt.yscale('log')
+        plt.xlabel('Energy $MeV$')
+        plt.ylabel('Flux $cm^{-2}s^{-1}MeV^{-1}$')
+        plt.plot(self.nebp_spectrum.step_x, self.nebp_spectrum.step_y, 'k', label='default spectrum')
+        plt.plot(self.data['th_ne_gr'].step_x, self.data['th_ne_gr'].step_y, 'r', label='gravel')
+        plt.plot(self.data['th_ne_mx'].step_x, self.data['th_ne_mx'].step_y, 'b', label='maxed')
+        plt.legend()
+        plt.savefig('unfolded_theoretical.png', dpi=300)
+        plt.close()
+
+        # only maxed
+        plt.figure(1)
+        plt.xscale('log')
+        plt.yscale('log')
+        plt.xlabel('Energy $MeV$')
+        plt.ylabel('Flux $cm^{-2}s^{-1}MeV^{-1}$')
+        plt.plot(self.nebp_spectrum.step_x, self.nebp_spectrum.step_y, 'k', label='default spectrum')
+        plt.plot(self.data['th_ne_mx'].step_x, self.data['th_ne_mx'].step_y, 'b', label='maxed')
+        plt.legend()
+        plt.savefig('unfolded_theoretical_maxed_only.png', dpi=300)
+        plt.close()
+
+        # only gravel
+        plt.figure(2)
+        plt.xscale('log')
+        plt.yscale('log')
+        plt.xlabel('Energy $MeV$')
+        plt.ylabel('Flux $cm^{-2}s^{-1}MeV^{-1}$')
+        plt.plot(self.nebp_spectrum.step_x, self.nebp_spectrum.step_y, 'k', label='default spectrum')
+        plt.plot(self.data['th_ne_gr'].step_x, self.data['th_ne_gr'].step_y, 'r', label='gravel')
+        plt.legend()
+        plt.savefig('unfolded_theoretical_gravel_only.png', dpi=300)
         plt.close()
 
 

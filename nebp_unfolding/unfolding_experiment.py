@@ -19,9 +19,9 @@ class Experiment(object):
     def load_responses(self):
         print('Loading Detector Response Data...')
         self.experimental_response = np.loadtxt('bonner_data.txt')
-        # used in unfolding but I want to move these to the unfolding class -
-        #  responseError = np.sqrt(self.experimental_response) / responseData
-        #  extraError = np.full(len(self.experimental_response), 0.5)
+        # normalize to 1/s from 5 min
+        sf = 1 / 300
+        self.experimental_response *= sf
         print('    Experimental Response Data Loaded')
         self.theoretical_response = np.loadtxt('nebp_theoretical_response.txt')
         print('    Theoretical Response Data Loaded\n')
