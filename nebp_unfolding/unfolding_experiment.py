@@ -54,18 +54,35 @@ class Experiment(object):
         self.load_typical_spectrum()
         self.load_nebp_spectrum()
 
-    def run_experiment_test(self):
-        # run with nebp spectrum for with experimental data with gravel
+    def run_experiment_ex_ne(self):
+        # run with nebp spectrum for with experimental data
         self.unfolding = Unfolding()
         self.unfolding.set_responses(self.experimental_response)
         self.unfolding.set_rf(self.edges, self.rf)
         self.unfolding.set_ds(self.nebp_spectrum)
         self.unfolding.set_routine('gravel')
-        self.unfolding.set_names('e_n_g')
-        self.unfolding.run('exp_nebp_grv')
+        self.unfolding.set_names('ex_ne_gr')
+        self.unfolding.run('ex_ne_gr')
+        self.unfolding.set_routine('maxed')
+        self.unfolding.set_names('ex_ne_mx')
+        self.unfolding.run('ex_ne_mx')
+    
+    def run_experiment_ex_ty(self):
+        # run with typical spectrum for with experimental data
+        self.unfolding = Unfolding()
+        self.unfolding.set_responses(self.experimental_response)
+        self.unfolding.set_rf(self.edges, self.rf)
+        self.unfolding.set_ds(self.nebp_spectrum)
+        self.unfolding.set_routine('gravel')
+        self.unfolding.set_names('ex_ty_gr')
+        self.unfolding.run('ex_ty_gr')
+        self.unfolding.set_routine('maxed')
+        self.unfolding.set_names('ex_ty_mx')
+        self.unfolding.run('ex_ty_mx')
     
     def run_all(self):
-        self.run_experiment_test()
+        self.run_experiment_ex_ne()
+        self.run_experiment_ex_ty()
 
 
 if __name__ == '__main__':

@@ -1,7 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import os
-import time
 from spectrum import Spectrum
 
 
@@ -24,6 +23,7 @@ class Unfolding(object):
         self.set_names('generic')
         self.setChiSqr(len(self.sphereSizes))
         self.setTemp([1.0, 0.85])
+        self.setIter([2000, 25])
         self.setSolnStructure(2)
         self.setSolnRepresentation(1)
         self.setSolnScaling([0, 1, 1])
@@ -82,6 +82,9 @@ class Unfolding(object):
 
     def setTemp(self, temp):
         self.temp = temp
+
+    def setIter(self, it):
+        self.iter = it
 
     def setSolnStructure(self, s):
         self.solnStructure = s
@@ -205,7 +208,10 @@ class Unfolding(object):
         inpString += '{}.flu   \n'.format(self.fluName)
         inpString += '{}   \n'.format(max(self.rfErgEdges))
         inpString += '{}   \n'.format(self.finalChiSqr)
-        inpString += '{}, {}   \n'.format(self.temp[0], self.temp[1])
+        if self.routine == 'maxed':
+            inpString += '{}, {}   \n'.format(self.temp[0], self.temp[1])
+        if self.routine == 'gravel':
+            inpString += '{}, {}   \n'.format(self.iter[0], self.iter[1])
         inpString += '{}, {}   \n'.format(self.solnStructure, self.solnRepresentation)
         inpString += '{}   \n{}   \n{}\n'.format(self.scaling[0], self.scaling[1], self.scaling[2])
         with open('inp/{}.inp'.format(self.inpName), 'w+') as F:
