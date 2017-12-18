@@ -169,9 +169,9 @@ class Unfolding(object):
             fmtString += ' 1.000E+00      cm^2         0         0    3    1    1    0\n '
 
             for j, resp in enumerate(self.responses[i]):
-                fmtString += '{:4.3E} '.format(resp)
+                fmtString += ' {:4.3E}'.format(resp)
                 if (j + 1) % 8 == 0:
-                    fmtString += '\n '
+                    fmtString += '\n'
                     eolFlag = 1
                 else:
                     eolFlag = 0
@@ -242,8 +242,11 @@ class Unfolding(object):
         if not hasattr(self, 'solutions'):
             self.solutions = []
         sol = np.loadtxt('out/{}.flu'.format(self.outName), skiprows=3)
+        s = ''
+        for i in sol:
+            s += '{:10.6e}  {:10.6e}  {:10.6e}\n'.format(*i)
         with open('{}_unfolded.txt'.format(label), 'w+') as F:
-            F.write(sol)
+            F.write(s)
 
     def run(self, label):
         self.writeInputFiles()

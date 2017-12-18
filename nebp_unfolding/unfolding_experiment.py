@@ -61,7 +61,7 @@ class Experiment(object):
         self.unfolding.set_rf(self.edges, self.rf)
         self.unfolding.set_ds(self.nebp_spectrum)
         self.unfolding.set_routine('gravel')
-        self.unfolding.set_names('exp_nebp_grv')
+        self.unfolding.set_names('e_n_g')
         self.unfolding.run('exp_nebp_grv')
     
     def run_all(self):
