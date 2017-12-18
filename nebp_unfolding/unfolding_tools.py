@@ -251,7 +251,11 @@ class Unfolding(object):
         s = ''
         for i in sol:
             s += '{:10.6e}  {:10.6e}  {:10.6e}\n'.format(*i)
-        with open('{}_unfolded.txt'.format(label), 'w+') as F:
+        try:
+            os.mkdir('data')
+        except:
+            pass
+        with open('data/{}_unfolded.txt'.format(label), 'w+') as F:
             F.write(s)
 
     def run(self, label):

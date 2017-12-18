@@ -7,7 +7,7 @@ from unfolding_tools import Unfolding
 import numpy as np
 from lwr_spectrum import FluxTypical
 from nebp_spectrum import FluxNEBP
-from spectrum import Spectrum
+import shutil
 
 
 class Experiment(object):
@@ -38,16 +38,15 @@ class Experiment(object):
     def load_typical_spectrum(self):
         print('Loading Typical LWR Spectrum...')
         sf = 294858.046942 / 0.0263292381867
-        self.typical_spectrum = FluxTypical(self.edges, sf, 1./7., 600.0).change_bins(self.edges)
+        self.typical_spectrum = FluxTypical(self.edges, sf, 1./7., 600.0)
+        self.typical_spectrum.change_bins(self.edges)
         print('    Typical LWR Spectrum Loaded\n')
 
     def load_nebp_spectrum(self):
         print('Loading NEBP Spectrum...')
         self.nebp_spectrum = FluxNEBP(250)
-        #self.nebp_spectrum.change_bins(self.edges)
-        print(self.nebp_spectrum.total_flux)
         print('    NEBP Spectrum Loaded\n')
-    
+
     def load_data(self):
         self.load_responses()
         self.load_response_functions()
@@ -66,25 +65,50 @@ class Experiment(object):
         self.unfolding.set_routine('maxed')
         self.unfolding.set_names('ex_ne_mx')
         self.unfolding.run('ex_ne_mx')
-    
+
     def run_experiment_ex_ty(self):
         # run with typical spectrum for with experimental data
         self.unfolding = Unfolding()
         self.unfolding.set_responses(self.experimental_response)
         self.unfolding.set_rf(self.edges, self.rf)
-        self.unfolding.set_ds(self.nebp_spectrum)
+        self.unfolding.set_ds(self.typical_spectrum)
         self.unfolding.set_routine('gravel')
         self.unfolding.set_names('ex_ty_gr')
         self.unfolding.run('ex_ty_gr')
         self.unfolding.set_routine('maxed')
         self.unfolding.set_names('ex_ty_mx')
         self.unfolding.run('ex_ty_mx')
-    
+
+    def run_experiment_th_ne(self):
+        # run with nebp spectrum for with theoretical data
+        self.unfolding = Unfolding()
+        self.unfolding.set_responses(self.theoretical_response)
+        self.unfolding.set_rf(self.edges, self.rf)
+        self.unfolding.set_ds(self.nebp_spectrum)
+        self.unfolding.set_routine('gravel')
+        self.unfolding.set_names('th_ne_gr')
+        self.unfolding.run('th_ne_gr')
+        self.unfolding.set_routine('maxed')
+        self.unfolding.set_names('th_ne_mx')
+        self.unfolding.run('th_ne_mx')
+
+    def run_experiment_th_ty(self):
+        # run with typical spectrum for with theoretical data
+        self.unfolding = Unfolding()
+        self.unfolding.set_responses(self.theoretical_response)
+        self.unfolding.set_rf(self.edges, self.rf)
+        self.unfolding.set_ds(self.typical_spectrum)
+        self.unfolding.set_routine('gravel')
+        self.unfolding.set_names('th_ty_gr')
+        self.unfolding.run('th_ty_gr')
+        self.unfolding.set_routine('maxed')
+        self.unfolding.set_names('th_ty_mx')
+        self.unfolding.run('th_ty_mx')
+
     def run_all(self):
         self.run_experiment_ex_ne()
         self.run_experiment_ex_ty()
-
-
-if __name__ == '__main__':
-    unfold = GenericUnfolding()
-
+        self.run_experiment_th_ne()
+        self.run_experiment_th_ty()
+        shutil.rmtree('inp')
+        shutil.rmtree('out')
