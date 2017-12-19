@@ -20,6 +20,9 @@ class Plot(object):
         # load scale56 bin edges
         self.edges = np.loadtxt('scale56.txt')
 
+        # load peak channels
+        self.peak_channels = np.loadtxt('peak_channels.txt')
+
         # load typical lwr spectrum
         sf = 294858.046942 / 0.0263292381867
         self.typical_spectrum = FluxTypical(self.edges, sf, 1./7., 600.0)
@@ -112,6 +115,13 @@ class Plot(object):
         plt.plot(self.data['ex_ne_gr'].step_x, gravel_ratio, 'r', label='gravel')
         maxed_ratio = abs(self.data['ex_ne_mx'].step_y / self.nebp_spectrum.step_y)
         plt.plot(self.data['ex_ne_mx'].step_x, maxed_ratio, 'b', label='maxed')
+        for i, bounds in enumerate(self.peak_channels):
+            l, r = bounds
+            if i == 0:
+                lab = 'peak channels'
+            else:
+                lab = None
+            plt.plot([l, r], [1, 1], 'gold', marker='|', label=lab)
         plt.legend()
         plt.savefig('unfolded_ratios.png', dpi=300)
         plt.close()
@@ -164,6 +174,13 @@ class Plot(object):
         plt.plot(self.data['th_ne_gr'].step_x, gravel_ratio, 'r', label='gravel')
         maxed_ratio = abs(self.data['th_ne_mx'].step_y / self.nebp_spectrum.step_y)
         plt.plot(self.data['th_ne_mx'].step_x, maxed_ratio, 'b', label='maxed')
+        for i, bounds in enumerate(self.peak_channels):
+            l, r = bounds
+            if i == 0:
+                lab = 'peak channels'
+            else:
+                lab = None
+            plt.plot([l, r], [1, 1], 'gold', marker='|', label=lab)
         plt.legend()
         plt.savefig('unfolded_theoretical_ratios.png', dpi=300)
         plt.close()
