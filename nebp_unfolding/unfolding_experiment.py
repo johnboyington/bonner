@@ -21,7 +21,9 @@ class Experiment(object):
         self.experimental_response = np.loadtxt('bonner_data.txt')
         # normalize to 1/s from 5 min
         sf = 1 / 300
-        self.experimental_response *= sf
+        powers = np.full(len(self.experimental_response), 250) / np.array([25.2, 25.15, 25.15, 25.13, 25.13, 25.15, 25.15])
+        e = 1 / 1
+        self.experimental_response *= (sf * powers * e)
         print('    Experimental Response Data Loaded')
         self.theoretical_response = np.loadtxt('nebp_theoretical_response.txt')
         print('    Theoretical Response Data Loaded\n')
