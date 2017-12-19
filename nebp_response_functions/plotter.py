@@ -10,8 +10,9 @@ class Plotter(object):
         self.get_data()
         self.get_decker()
         self.set_coefficient()
-        self.plot()
-        self.plot_comparison()
+        #self.plot()
+        #self.plot_comparison()
+        self.calc_peak_channels()
 
     def get_data(self):
         self.data = np.loadtxt('nebp_response_functions.txt').reshape(7, -1, 4)
@@ -80,6 +81,26 @@ class Plotter(object):
             plt.legend(loc=3)
             plt.savefig('rf_comp{}.png'.format(l), dpi=250)
             plt.close()
+
+    def calc_peak_channels(self):
+        peak_channels = []
+        prev = []
+        for i, sphere in enumerate(self.data):
+            best = np.array([0, 1E-11, 0, 0])
+            best_prev = np.array([0, 1E-11, 0, 0])
+            for j, erg in enumerate(sphere):
+                if erg[2] > best[2]:
+                    best = erg
+                    best_prev = sphere[j-1][1]
+            peak_channels.append(best[1])
+            prev.append(best_prev)
+        print(peak_channels)
+        print(prev)
+        with open('peak_channels.txt', 'w+') as F:
+            for i, ch in enumerate(peak_channels):
+                F.write('{:10.6e} {:10.6e}\n'.format(prev[i], ch))
+                     
+            
 
 
 if __name__ == '__main__':
