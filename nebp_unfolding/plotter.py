@@ -101,6 +101,21 @@ class Plot(object):
         plt.savefig('unfolded_gravel_only.png', dpi=300)
         plt.close()
 
+        # groupwise ratios
+        plt.figure(3)
+        plt.xscale('log')
+        plt.yscale('log')
+        plt.xlabel('Energy $MeV$')
+        plt.ylabel('Ratio $\phi / \phi_{default}$')
+        plt.plot([1E-11, 20], [1, 1], 'k', label='reference')
+        gravel_ratio = abs(self.data['ex_ne_gr'].step_y / self.nebp_spectrum.step_y)
+        plt.plot(self.data['ex_ne_gr'].step_x, gravel_ratio, 'r', label='gravel')
+        maxed_ratio = abs(self.data['ex_ne_mx'].step_y / self.nebp_spectrum.step_y)
+        plt.plot(self.data['ex_ne_mx'].step_x, maxed_ratio, 'b', label='maxed')
+        plt.legend()
+        plt.savefig('unfolded_ratios.png', dpi=300)
+        plt.close()
+
     def plot_theoretical_nebp(self):
         plt.figure(0)
         plt.xscale('log')
@@ -136,6 +151,21 @@ class Plot(object):
         plt.plot(self.data['th_ne_gr'].step_x, self.data['th_ne_gr'].step_y, 'r', label='gravel')
         plt.legend()
         plt.savefig('unfolded_theoretical_gravel_only.png', dpi=300)
+        plt.close()
+
+        # groupwise ratios
+        plt.figure(3)
+        plt.xscale('log')
+        plt.yscale('log')
+        plt.xlabel('Energy $MeV$')
+        plt.ylabel('Ratio $\phi / \phi_{default}$')
+        plt.plot([1E-11, 20], [1, 1], 'k', label='reference')
+        gravel_ratio = abs(self.data['th_ne_gr'].step_y / self.nebp_spectrum.step_y)
+        plt.plot(self.data['th_ne_gr'].step_x, gravel_ratio, 'r', label='gravel')
+        maxed_ratio = abs(self.data['th_ne_mx'].step_y / self.nebp_spectrum.step_y)
+        plt.plot(self.data['th_ne_mx'].step_x, maxed_ratio, 'b', label='maxed')
+        plt.legend()
+        plt.savefig('unfolded_theoretical_ratios.png', dpi=300)
         plt.close()
 
 
