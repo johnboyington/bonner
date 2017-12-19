@@ -10,8 +10,8 @@ class Plotter(object):
         self.get_data()
         self.get_decker()
         self.set_coefficient()
-        #self.plot()
-        #self.plot_comparison()
+        self.plot()
+        self.plot_comparison()
         self.calc_peak_channels()
 
     def get_data(self):
