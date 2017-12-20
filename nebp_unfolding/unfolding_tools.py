@@ -20,7 +20,7 @@ class Unfolding(object):
         self.setSphereSizes([0.0, 2.0, 3.0, 5.0, 8.0, 10.0, 12.0])
         self.setCorrectionFactor(0)
         self.setDefEnergyUnits('MeV', 'MeV')
-        self.setMode(1)
+        self.setMode(2)
         self.set_names('generic')
         # self.setChiSqr(len(self.sphereSizes))
         self.setChiSqr(1)
