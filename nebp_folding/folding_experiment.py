@@ -11,7 +11,7 @@ class Folding_Experiment(object):
     def __init__(self, plot_all=False):
         self.nice_plots()
         self.set_coefficient()
-        self.sizes = [0.0, 2.0, 3.0, 5.0, 8.0, 10.0, 12.0]
+        self.sizes = [0, 2, 3, 5, 8, 10, 12]
         self.get_robert_data()
         self.normalize_experimental_responses()
         self.fold_typical()
@@ -91,14 +91,26 @@ class Folding_Experiment(object):
             F.write(s)
 
     def plot_theoretical(self):
-        plt.figure(50)
-        plt.ylabel('response $s^{-1}$')
-        plt.xlabel('sphere size $in$')
-        plt.plot(self.sizes, self.typical_response, 'kx', label='theoretical typical')
-        plt.plot(self.sizes, self.nebp_response, 'ko', label='theoretical nebp')
-        plt.legend()
-        plt.savefig('responses_theoretical.png', dpi=250)
-        plt.close()
+        fig = plt.figure(50)
+        ax = fig.add_subplot(111)
+        ax.set_ylabel('Response $s^{-1}$')
+        ax.set_xlabel('Sphere Size $in$')
+        style = {'color': 'green', 'marker': '^', 'markerfacecolor': 'None',
+                 'markeredgecolor': 'green', 'linestyle': 'None', 'label': 'Theoretical Typical',
+                 'mew': 0.5, 'ms': 6}
+        ax.plot(self.sizes, self.typical_response, **style)
+        # plot over one another
+        style = {'color': 'blue', 'marker': 'o', 'markerfacecolor': (0, 0, 0.9, 0.9), 'alpha': 0.9,
+                 'markeredgecolor': 'blue', 'linestyle': 'None', 'label': 'Theoretical NEBP',
+                 'mew': 0.5, 'ms': 6}
+        ax.plot(self.sizes, self.nebp_response, **style)
+        ax.set_xticks(self.sizes)
+        ax.set_xticklabels(self.sizes)
+        ax.spines['top'].set_visible(False)
+        ax.spines['right'].set_visible(False)
+        ax.legend()
+        fig.savefig('responses_theoretical.png', dpi=250)
+        plt.close(fig)
 
     def plot_responses(self):
         plt.figure(51)
