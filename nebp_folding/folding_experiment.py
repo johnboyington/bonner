@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from nice_plots import Nice_Plots
+from matplotlib import rc, rcParams
 from lwr_spectrum import FluxTypical
 from nebp_spectrum import FluxNEBP
 from folding import Folding
@@ -9,7 +9,7 @@ from folding import Folding
 class Folding_Experiment(object):
 
     def __init__(self, plot_all=False):
-        Nice_Plots()
+        self.nice_plots()
         self.set_coefficient()
         self.sizes = [0.0, 2.0, 3.0, 5.0, 8.0, 10.0, 12.0]
         self.get_robert_data()
@@ -21,6 +21,16 @@ class Folding_Experiment(object):
             self.plot_theoretical()
             self.plot_diffs()
             self.plot_robert()
+
+    def nice_plots(self):
+        rc('font', **{'family': 'serif'})
+        rcParams['xtick.direction'] = 'out'
+        rcParams['ytick.direction'] = 'out'
+        rcParams['xtick.labelsize'] = 12
+        rcParams['ytick.labelsize'] = 12
+        rcParams['lines.linewidth'] = 1.85
+        rcParams['axes.labelsize'] = 15
+        rcParams.update({'figure.autolayout': True})
 
     def set_coefficient(self):
         self.c = 1.774E-2 * (1/4)
