@@ -183,63 +183,62 @@ class Plot(object):
         plt.close(fig)
 
     def plot_theoretical_nebp(self):
-        plt.figure(0)
-        plt.xscale('log')
-        plt.yscale('log')
-        plt.xlabel('Energy $MeV$')
-        plt.ylabel('Flux $cm^{-2}s^{-1}MeV^{-1}$')
-        plt.plot(self.nebp_spectrum.step_x, self.nebp_spectrum.step_y, 'k', label='default spectrum')
-        plt.plot(self.data['th_ne_gr'].step_x, self.data['th_ne_gr'].step_y, 'r', label='gravel')
-        plt.plot(self.data['th_ne_mx'].step_x, self.data['th_ne_mx'].step_y, 'b', label='maxed')
-        plt.legend()
-        plt.savefig('unfolded_theoretical.png', dpi=300)
-        plt.close()
+        fig = plt.figure(0)
+        ax = fig.add_subplot(111)
+        ax.set_xscale('log')
+        ax.set_yscale('log')
+        ax.set_xlabel('Energy $MeV$')
+        ax.set_ylabel('Flux $cm^{-2}s^{-1}MeV^{-1}$')
+        ax.set_xlim(1E-9, 20)
+        ax.set_ylim(1E2, 1E13)
 
-        # only maxed
-        plt.figure(1)
-        plt.xscale('log')
-        plt.yscale('log')
-        plt.xlabel('Energy $MeV$')
-        plt.ylabel('Flux $cm^{-2}s^{-1}MeV^{-1}$')
-        plt.plot(self.nebp_spectrum.step_x, self.nebp_spectrum.step_y, 'k', label='default spectrum')
-        plt.plot(self.data['th_ne_mx'].step_x, self.data['th_ne_mx'].step_y, 'b', label='maxed')
-        plt.legend()
-        plt.savefig('unfolded_theoretical_maxed_only.png', dpi=300)
-        plt.close()
+        style = {'color': 'red',  'linewidth': 0.7, 'label': 'default spectrum'}
+        ax.plot(self.nebp_spectrum.step_x, self.nebp_spectrum.step_y, **style)
+        style = {'color': 'green', 'linestyle': '--', 'linewidth': 0.7, 'label': 'gravel'}
+        ax.plot(self.data['th_ne_gr'].step_x, self.data['th_ne_gr'].step_y, **style)
+        style = {'color': 'blue', 'linestyle': '-.', 'linewidth': 0.7, 'label': 'maxed'}
+        ax.plot(self.data['th_ne_mx'].step_x, self.data['th_ne_mx'].step_y, **style)
 
-        # only gravel
-        plt.figure(2)
-        plt.xscale('log')
-        plt.yscale('log')
-        plt.xlabel('Energy $MeV$')
-        plt.ylabel('Flux $cm^{-2}s^{-1}MeV^{-1}$')
-        plt.plot(self.nebp_spectrum.step_x, self.nebp_spectrum.step_y, 'k', label='default spectrum')
-        plt.plot(self.data['th_ne_gr'].step_x, self.data['th_ne_gr'].step_y, 'r', label='gravel')
-        plt.legend()
-        plt.savefig('unfolded_theoretical_gravel_only.png', dpi=300)
-        plt.close()
+        ax.spines['top'].set_visible(False)
+        ax.spines['right'].set_visible(False)
+        ax.legend(frameon=False)
+        fig.savefig('unfolded_theoretical.png', dpi=300)
+        plt.close(fig)
 
         # groupwise ratios
-        plt.figure(3)
-        plt.xscale('log')
-        plt.yscale('log')
-        plt.xlabel('Energy $MeV$')
-        plt.ylabel('Ratio $\phi / \phi_{default}$')
-        plt.plot([1E-11, 20], [1, 1], 'k', label='reference')
+        fig = plt.figure(1)
+        ax = fig.add_subplot(111)
+        ax.set_xscale('log')
+        ax.set_xlabel('Energy $MeV$')
+        ax.set_ylabel('Ratio $\phi / \phi_{default}$')
+        ax.set_xlim(1E-9, 20)
+        ax.set_ylim(0.975, 1.025)
+
+        style = {'color': 'black',  'linewidth': 0.7, 'label': 'reference'}
+        ax.plot([1E-11, 20], [1, 1], **style)
+
         gravel_ratio = abs(self.data['th_ne_gr'].step_y / self.nebp_spectrum.step_y)
-        plt.plot(self.data['th_ne_gr'].step_x, gravel_ratio, 'r', label='gravel')
+        style = {'color': 'green',  'linewidth': 0.7, 'label': 'gravel'}
+        ax.plot(self.data['th_ne_gr'].step_x, gravel_ratio, **style)
+
         maxed_ratio = abs(self.data['th_ne_mx'].step_y / self.nebp_spectrum.step_y)
-        plt.plot(self.data['th_ne_mx'].step_x, maxed_ratio, 'b', label='maxed')
+        style = {'color': 'blue',  'linewidth': 0.7, 'label': 'maxed'}
+        ax.plot(self.data['th_ne_mx'].step_x, maxed_ratio, **style)
         for i, bounds in enumerate(self.peak_channels):
             l, r = bounds
             if i == 0:
                 lab = 'peak channels'
             else:
                 lab = None
-            plt.plot([l, r], [1, 1], 'gold', marker='|', label=lab)
-        plt.legend()
-        plt.savefig('unfolded_theoretical_ratios.png', dpi=300)
-        plt.close()
+            style = {'color': 'gold', 'marker': '|',  'linewidth': 0.7, 'label': lab}
+            ax.plot([l, r], [1, 1], **style)
+
+        ax.fill_between(self.nebp_spectrum.step_x, 1, maxed_ratio, facecolor='blue', alpha=0.2)
+        ax.fill_between(self.nebp_spectrum.step_x, 1, gravel_ratio, facecolor='green', alpha=0.2)
+
+        ax.legend(frameon=False)
+        fig.savefig('unfolded_theoretical_ratios.png', dpi=300)
+        plt.close(fig)
 
 
 Plot()
