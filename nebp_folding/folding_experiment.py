@@ -105,7 +105,7 @@ class Folding_Experiment(object):
                  'mew': 0.5, 'ms': 6}
         ax.plot(self.sizes, self.nebp_response, **style)
         ax.set_xticks(self.sizes)
-        ax.set_xticklabels(self.sizes)
+        ax.set_xticklabels(['Bare'] + self.sizes[1:])
         ax.spines['top'].set_visible(False)
         ax.spines['right'].set_visible(False)
         ax.legend()
