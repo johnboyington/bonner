@@ -8,7 +8,7 @@ from folding import Folding
 
 class Folding_Experiment(object):
 
-    def __init__(self, plot_all=False):
+    def __init__(self):
         self.nice_plots()
         self.set_coefficient()
         self.sizes = [0, 2, 3, 5, 8, 10, 12]
@@ -17,10 +17,9 @@ class Folding_Experiment(object):
         self.fold_typical()
         self.fold_nebp()
         self.plot_responses()
-        if plot_all:
-            self.plot_theoretical()
-            self.plot_diffs()
-            self.plot_robert()
+        self.plot_theoretical()
+        self.plot_diffs()
+        # self.plot_robert()
 
     def nice_plots(self):
         rc('font', **{'family': 'serif'})
@@ -99,8 +98,7 @@ class Folding_Experiment(object):
                  'markeredgecolor': 'green', 'linestyle': 'None', 'label': 'Theoretical Typical',
                  'mew': 0.5, 'ms': 6}
         ax.plot(self.sizes, self.typical_response, **style)
-        # plot over one another
-        style = {'color': 'blue', 'marker': 'o', 'markerfacecolor': (0, 0, 0.9, 0.9), 'alpha': 0.9,
+        style = {'color': 'blue', 'marker': 'o', 'markerfacecolor': 'None',
                  'markeredgecolor': 'blue', 'linestyle': 'None', 'label': 'Theoretical NEBP',
                  'mew': 0.5, 'ms': 6}
         ax.plot(self.sizes, self.nebp_response, **style)
@@ -109,29 +107,51 @@ class Folding_Experiment(object):
         ax.spines['top'].set_visible(False)
         ax.spines['right'].set_visible(False)
         ax.legend()
-        fig.savefig('responses_theoretical.png', dpi=250)
+        fig.savefig('responses_theoretical.png', dpi=300)
         plt.close(fig)
 
     def plot_responses(self):
-        plt.figure(51)
-        plt.ylabel('response $s^{-1}$')
-        plt.xlabel('sphere size $in$')
-        plt.plot(self.sizes, self.typical_response, 'kx', label='theoretical typical')
-        plt.plot(self.sizes, self.nebp_response, 'ko', label='theoretical nebp')
-        plt.plot(self.sizes, self.experimental_responses, 'ro', label='experimental')
-        plt.legend()
-        plt.savefig('responses_comparison.png', dpi=250)
-        plt.close()
+        fig = plt.figure(51)
+        ax = fig.add_subplot(111)
+        ax.set_ylabel('Response $s^{-1}$')
+        ax.set_xlabel('Sphere Size $in$')
+        style = {'color': 'green', 'marker': '^', 'markerfacecolor': 'None',
+                 'markeredgecolor': 'green', 'linestyle': 'None', 'label': 'Theoretical Typical',
+                 'mew': 0.5, 'ms': 6}
+        ax.plot(self.sizes, self.typical_response, **style)
+        style = {'color': 'blue', 'marker': 'o', 'markerfacecolor': 'None',
+                 'markeredgecolor': 'blue', 'linestyle': 'None', 'label': 'Theoretical NEBP',
+                 'mew': 0.5, 'ms': 6}
+        ax.plot(self.sizes, self.nebp_response, **style)
+        style = {'color': 'red', 'marker': 'x', 'markerfacecolor': 'None',
+                 'markeredgecolor': 'red', 'linestyle': 'None', 'label': 'Experimental NEBP',
+                 'mew': 0.5, 'ms': 6}
+        ax.plot(self.sizes, self.experimental_responses, **style)
+        ax.set_xticks(self.sizes)
+        ax.set_xticklabels(['Bare'] + self.sizes[1:])
+        ax.spines['top'].set_visible(False)
+        ax.spines['right'].set_visible(False)
+        ax.legend()
+        fig.savefig('responses_comparison.png', dpi=300)
+        plt.close(fig)
 
     def plot_diffs(self):
         diffs = abs(100 * (self.experimental_responses - self.nebp_response) / self.experimental_responses)
-        plt.figure(52)
-        plt.ylabel('relative percent error')
-        plt.xlabel('sphere size $in$')
-        plt.plot(self.sizes, diffs, 'g^', label='difference')
-        plt.legend()
-        plt.savefig('responses_error.png', dpi=250)
-        plt.close()
+        fig = plt.figure(52)
+        ax = fig.add_subplot(111)
+        ax.set_ylabel('Relative Error %')
+        ax.set_xlabel('Sphere Size $in$')
+        style = {'color': 'indigo', 'marker': 'd', 'markerfacecolor': 'None',
+                 'markeredgecolor': 'indigo', 'linestyle': 'None', 'label': 'Theoretical NEBP',
+                 'mew': 0.5, 'ms': 6}
+        ax.plot(self.sizes, diffs, **style)
+        ax.set_xticks(self.sizes)
+        ax.set_xticklabels(['Bare'] + self.sizes[1:])
+        ax.spines['top'].set_visible(False)
+        ax.spines['right'].set_visible(False)
+        ax.legend()
+        fig.savefig('responses_error.png', dpi=250)
+        plt.close(fig)
 
     def plot_robert(self):
         plt.figure(53)
@@ -147,4 +167,4 @@ class Folding_Experiment(object):
 
 
 if __name__ == '__main__':
-    do = Folding_Experiment(plot_all=True)
+    do = Folding_Experiment()

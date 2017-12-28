@@ -1,9 +1,0 @@
-#!/bin/sh
-#PBS -l nodes=8:ppn=32
-cd $PBS_O_WORKDIR
-cat $PBS_NODEFILE > nodes
-NO_OF_CORES=`cat $PBS_NODEFILE | egrep -v '^#'\|'^$' | wc -l | awk '{print $1}'`
-echo $NO_OF_CORES
-NODE_LIST=`cat $PBS_NODEFILE`
-echo $NODE_LIST
-mpirun -np $NO_OF_CORES -machinefile nodes mcnp6.mpi i=n.i wwinp=n.wwi o=n.o
