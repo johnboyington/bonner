@@ -166,14 +166,14 @@ class Plot(object):
         maxed_ratio = abs(self.data['ex_ne_mx'].step_y / self.nebp_spectrum.step_y)
         style = {'color': 'blue',  'linewidth': 0.7, 'label': 'maxed'}
         ax.plot(self.data['ex_ne_mx'].step_x, maxed_ratio, **style)
-        for i, bounds in enumerate(self.peak_channels):
-            l, r = bounds
-            if i == 0:
-                lab = 'peak channels'
-            else:
-                lab = None
-            style = {'color': 'gold', 'marker': '|',  'linewidth': 0.7, 'label': lab}
-            ax.plot([l, r], [1, 1], **style)
+#        for i, bounds in enumerate(self.peak_channels):
+#            l, r = bounds
+#            if i == 0:
+#                lab = 'peak channels'
+#            else:
+#                lab = None
+#            style = {'color': 'gold', 'marker': '|',  'linewidth': 0.7, 'label': lab}
+#            ax.plot([l, r], [1, 1], **style)
 
         ax.fill_between(self.nebp_spectrum.step_x, 1, maxed_ratio, facecolor='blue', alpha=0.2)
         ax.fill_between(self.nebp_spectrum.step_x, 1, gravel_ratio, facecolor='green', alpha=0.2)
@@ -224,14 +224,14 @@ class Plot(object):
         maxed_ratio = abs(self.data['th_ne_mx'].step_y / self.nebp_spectrum.step_y)
         style = {'color': 'blue',  'linewidth': 0.7, 'label': 'maxed'}
         ax.plot(self.data['th_ne_mx'].step_x, maxed_ratio, **style)
-        for i, bounds in enumerate(self.peak_channels):
-            l, r = bounds
-            if i == 0:
-                lab = 'peak channels'
-            else:
-                lab = None
-            style = {'color': 'gold', 'marker': '|',  'linewidth': 0.7, 'label': lab}
-            ax.plot([l, r], [1, 1], **style)
+#        for i, bounds in enumerate(self.peak_channels):
+#            l, r = bounds
+#            if i == 0:
+#                lab = 'peak channels'
+#            else:
+#                lab = None
+#            style = {'color': 'gold', 'marker': '|',  'linewidth': 0.7, 'label': lab}
+#            ax.plot([l, r], [1, 1], **style)
 
         ax.fill_between(self.nebp_spectrum.step_x, 1, maxed_ratio, facecolor='blue', alpha=0.2)
         ax.fill_between(self.nebp_spectrum.step_x, 1, gravel_ratio, facecolor='green', alpha=0.2)
