@@ -24,6 +24,13 @@ class Experiment(object):
         powers = np.full(len(self.experimental_response), 250) / np.array([25.2, 25.15, 25.15, 25.13, 25.13, 25.15, 25.15])
         e = 1 / 1
         self.experimental_response *= (sf * powers * e)
+        # repeat for second set of data
+        self.experimental_response2 = np.loadtxt('bonner_data2.txt')
+        # normalize to 1/s from 5 min
+        sf = 1 / 300
+        powers = np.full(len(self.experimental_response2), 250) / np.array([24.9, 24.7, 24.67, 24.67, 24.67, 24.67, 24.67])
+        e = 1 / 1
+        self.experimental_response2 *= (sf * powers * e)
         print('    Experimental Response Data Loaded')
         self.theoretical_response = np.loadtxt('nebp_theoretical_response.txt')
         print('    Theoretical Response Data Loaded\n')
@@ -81,6 +88,32 @@ class Experiment(object):
         self.unfolding.set_names('ex_ty_mx')
         self.unfolding.run('ex_ty_mx')
 
+    def run_experiment2_ex_ne(self):
+        # run with nebp spectrum for with experimental data #2
+        self.unfolding = Unfolding()
+        self.unfolding.set_responses(self.experimental_response2)
+        self.unfolding.set_rf(self.edges, self.rf)
+        self.unfolding.set_ds(self.nebp_spectrum)
+        self.unfolding.set_routine('gravel')
+        self.unfolding.set_names('ex_ne_g2')
+        self.unfolding.run('ex_ne_g2')
+        self.unfolding.set_routine('maxed')
+        self.unfolding.set_names('ex_ne_m2')
+        self.unfolding.run('ex_ne_m2')
+
+    def run_experiment2_ex_ty(self):
+        # run with typical spectrum for with experimental data #2
+        self.unfolding = Unfolding()
+        self.unfolding.set_responses(self.experimental_response2)
+        self.unfolding.set_rf(self.edges, self.rf)
+        self.unfolding.set_ds(self.typical_spectrum)
+        self.unfolding.set_routine('gravel')
+        self.unfolding.set_names('ex_ty_g2')
+        self.unfolding.run('ex_ty_g2')
+        self.unfolding.set_routine('maxed')
+        self.unfolding.set_names('ex_ty_m2')
+        self.unfolding.run('ex_ty_m2')
+
     def run_experiment_th_ne(self):
         # run with nebp spectrum for with theoretical data
         self.unfolding = Unfolding()
@@ -109,10 +142,14 @@ class Experiment(object):
 
     def run_all(self):
         print('\n')
-        print('Running Experimental Responses, NEBP Spectrum...')
+        print('Running First Experimental Responses, NEBP Spectrum...')
         self.run_experiment_ex_ne()
-        print('Running Experimental Responses, Typical LWR Spectrum...')
+        print('Running First Experimental Responses, Typical LWR Spectrum...')
         self.run_experiment_ex_ty()
+        print('Running Second Experimental Responses, NEBP Spectrum...')
+        self.run_experiment2_ex_ne()
+        print('Running Second Experimental Responses, Typical LWR Spectrum...')
+        self.run_experiment2_ex_ty()
         print('Running Theoretical Responses, NEBP Spectrum...')
         self.run_experiment_th_ne()
         print('Running Theoretical Responses, Typical LWR Spectrum...')
