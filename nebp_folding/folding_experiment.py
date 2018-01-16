@@ -36,15 +36,29 @@ class Folding_Experiment(object):
         self.c = 1.774E-2 * (1/4)
 
     def normalize_experimental_responses(self):
+        # TODO: subtract background
         s = 5 * 60  # 5 minutes
-        r = np.array([141585, 102435, 76796, 38056, 13923, 8091, 4834]) / s
-        r2 = np.array([7899, 2830, 2148, 1125, 399, 237, 123]) / s
+        r = np.loadtxt('bonner_data.txt', skiprows=1)
         powers = np.full(len(r), 250) / np.array([25.2, 25.15, 25.15, 25.13, 25.13, 25.15, 25.15])
-        powers2 = np.full(len(r), 250) / np.array([24.9, 24.7, 24.67, 24.67, 24.67, 24.67, 24.67])
         # efficiency_correction
         e = 1
-        self.experimental_responses = r * powers * (1 / e)
-        self.experimental_responses2 = r2 * powers2 * (1 / e)
+        self.experimental_responses = r * powers * (1 / e) * (1 / s)
+
+        # load 2nd dataset
+        s = 5 * 60  # 5 minutes
+        r = np.loadtxt('bonner_data2.txt', skiprows=1)
+        powers = (250 / 24.86)
+        # efficiency_correction
+        e = 1
+        self.experimental_responses2 = r * powers * (1 / e) * (1 / s)
+
+        # load 3rd (filtered) dataset
+        s = 5 * 60  # 5 minutes
+        r = np.loadtxt('bonner_data3.txt', skiprows=1)
+        powers = (250 / 24.86)
+        # efficiency_correction
+        e = 1
+        self.experimental_responses3 = r * powers * (1 / e) * (1 / s)
 
     def get_robert_data(self):
         self.robert_responses = np.array([1935, 8823, 11049, 6825, 2544, 1402, 896]) * 0.18
@@ -119,22 +133,22 @@ class Folding_Experiment(object):
         ax = fig.add_subplot(111)
         ax.set_ylabel('Response $s^{-1}$')
         ax.set_xlabel('Sphere Size $in$')
-        style = {'color': 'green', 'marker': '^', 'markerfacecolor': 'None',
-                 'markeredgecolor': 'green', 'linestyle': 'None', 'label': 'Theoretical Typical',
-                 'mew': 0.5, 'ms': 6}
-        ax.plot(self.sizes, self.typical_response, **style)
-        style = {'color': 'blue', 'marker': 'o', 'markerfacecolor': 'None',
-                 'markeredgecolor': 'blue', 'linestyle': 'None', 'label': 'Theoretical NEBP',
+        style = {'color': 'red', 'marker': 'x', 'markerfacecolor': 'None',
+                 'markeredgecolor': 'red', 'linestyle': 'None', 'label': 'Theoretical NEBP',
                  'mew': 0.5, 'ms': 6}
         ax.plot(self.sizes, self.nebp_response, **style)
-        style = {'color': 'red', 'marker': 'x', 'markerfacecolor': 'None',
-                 'markeredgecolor': 'red', 'linestyle': 'None', 'label': 'Experimental NEBP',
+        style = {'color': 'blue', 'marker': 'o', 'markerfacecolor': 'None',
+                 'markeredgecolor': 'blue', 'linestyle': 'None', 'label': 'Experimental NEBP',
                  'mew': 0.5, 'ms': 6}
         ax.plot(self.sizes, self.experimental_responses, **style)
-        style = {'color': 'indigo', 'marker': 'd', 'markerfacecolor': 'None',
-                 'markeredgecolor': 'indigo', 'linestyle': 'None', 'label': 'Experimental NEBP #2',
+        style = {'color': 'green', 'marker': '^', 'markerfacecolor': 'None',
+                 'markeredgecolor': 'green', 'linestyle': 'None', 'label': 'Experimental NEBP #2',
                  'mew': 0.5, 'ms': 6}
         ax.plot(self.sizes, self.experimental_responses2, **style)
+        style = {'color': 'indigo', 'marker': 'd', 'markerfacecolor': 'None',
+                 'markeredgecolor': 'indigo', 'linestyle': 'None', 'label': 'Experimental NEBP Filtered',
+                 'mew': 0.5, 'ms': 6}
+        ax.plot(self.sizes, self.experimental_responses3, **style)
         ax.set_xticks(self.sizes)
         ax.set_xticklabels(['Bare'] + self.sizes[1:])
         ax.spines['top'].set_visible(False)
@@ -152,10 +166,14 @@ class Folding_Experiment(object):
                  'markeredgecolor': 'red', 'linestyle': 'None', 'label': 'Experimental NEBP',
                  'mew': 0.5, 'ms': 6}
         ax.plot(self.sizes, self.experimental_responses, **style)
-        style = {'color': 'indigo', 'marker': 'd', 'markerfacecolor': 'None',
-                 'markeredgecolor': 'indigo', 'linestyle': 'None', 'label': 'Experimental NEBP #2 (Scaled up by 35)',
+        style = {'color': 'green', 'marker': '^', 'markerfacecolor': 'None',
+                 'markeredgecolor': 'green', 'linestyle': 'None', 'label': 'Experimental NEBP #2',
                  'mew': 0.5, 'ms': 6}
-        ax.plot(self.sizes, self.experimental_responses2 * 35, **style)
+        ax.plot(self.sizes, self.experimental_responses2, **style)
+        style = {'color': 'indigo', 'marker': 'd', 'markerfacecolor': 'None',
+                 'markeredgecolor': 'indigo', 'linestyle': 'None', 'label': 'Experimental NEBP Filtered',
+                 'mew': 0.5, 'ms': 6}
+        ax.plot(self.sizes, self.experimental_responses3, **style)
         ax.set_xticks(self.sizes)
         ax.set_xticklabels(['Bare'] + self.sizes[1:])
         ax.spines['top'].set_visible(False)
