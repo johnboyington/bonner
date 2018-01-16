@@ -35,12 +35,23 @@ class Plot(object):
         # load nebp spectrum
         self.nebp_spectrum = FluxNEBP(250)
 
+        # load filtered spectrum
+        # calculate neutron scaling factor
+        tally_area = tally_area = np.pi * (1.27 ** 2)
+        cn = 2.54 / (200 * 1.60218e-13 * tally_area)
+        cn *= 7.53942E-8
+        cn *= 250  # normalize to 250 W(th)
+        n_fil = np.loadtxt('n_fil.txt')
+        n_fil = n_fil.T[1][1:] * cn
+        self.filtered_spectrum = Spectrum(self.edges, n_fil)
+
         # load unfolded data
         self.data = {}
-        self.datasets = ['ex_ne_gr', 'ex_ne_mx', 'ex_ty_gr', 'ex_ty_mx',
-                         'e2_ne_gr', 'e2_ne_mx', 'e2_ty_gr', 'e2_ty_mx',
-                         'e3_ne_gr', 'e3_ne_mx', 'e3_ty_gr', 'e3_ty_mx',
-                         'th_ne_gr', 'th_ne_mx', 'th_ty_gr', 'th_ty_mx']
+        self.datasets = ['ex_ne_gr', 'ex_ne_mx',
+                         'e2_ne_gr', 'e2_ne_mx',
+                         'e3_ne_gr', 'e3_ne_mx',
+                         'e3_fi_gr', 'e3_fi_mx',
+                         'th_ne_gr', 'th_ne_mx']
         for name in self.datasets:
             self.load_dataset(name)
 
@@ -55,12 +66,13 @@ class Plot(object):
         rcParams.update({'figure.autolayout': True})
 
     def plot_all(self):
-        self.plot('ex_ne_gr', 'ex_ne_mx', '1')
-        self.plot('e2_ne_gr', 'e2_ne_mx', '2')
-        self.plot('e3_ne_gr', 'e3_ne_mx', '3')
-        self.plot('th_ne_gr', 'th_ne_mx', 'theoretical')
+        self.plot('ex_ne_gr', 'ex_ne_mx', '1', self.nebp_spectrum)
+        self.plot('e2_ne_gr', 'e2_ne_mx', '2', self.nebp_spectrum)
+        self.plot('e3_ne_gr', 'e3_ne_mx', '3', self.nebp_spectrum)
+        self.plot('e3_fi_gr', 'e3_fi_mx', 'filtered', self.filtered_spectrum)
+        self.plot('th_ne_gr', 'th_ne_mx', 'theoretical', self.nebp_spectrum)
 
-    def plot(self, name1, name2, savename):
+    def plot(self, name1, name2, savename, ds):
         fig = plt.figure(0)
         ax = fig.add_subplot(111)
         ax.set_xscale('log')
@@ -71,7 +83,7 @@ class Plot(object):
         ax.set_ylim(1E2, 1E13)
 
         style = {'color': 'red',  'linewidth': 0.7, 'label': 'default spectrum'}
-        ax.plot(self.nebp_spectrum.step_x, self.nebp_spectrum.step_y, **style)
+        ax.plot(ds.step_x, ds.step_y, **style)
         style = {'color': 'green', 'linestyle': '--', 'linewidth': 0.7, 'label': 'gravel'}
         ax.plot(self.data[name1].step_x, self.data[name1].step_y, **style)
         style = {'color': 'blue', 'linestyle': '-.', 'linewidth': 0.7, 'label': 'maxed'}
@@ -94,12 +106,12 @@ class Plot(object):
         ax.set_ylim(1E2, 1E13)
 
         style = {'color': 'red',  'linewidth': 0.7, 'label': 'default spectrum'}
-        ax.plot(self.nebp_spectrum.step_x, self.nebp_spectrum.step_y, **style)
+        ax.plot(ds.step_x, ds.step_y, **style)
         style = {'color': 'blue', 'linestyle': '-.', 'linewidth': 0.7, 'label': 'maxed'}
         ax.plot(self.data[name2].step_x, self.data[name2].step_y, **style)
 
-        ax.fill_between(self.nebp_spectrum.step_x, 0, self.nebp_spectrum.step_y, facecolor='red', alpha=0.2)
-        ax.fill_between(self.nebp_spectrum.step_x, 0, self.data[name2].step_y, facecolor='blue', alpha=0.2)
+        ax.fill_between(ds.step_x, 0, ds.step_y, facecolor='red', alpha=0.2)
+        ax.fill_between(ds.step_x, 0, self.data[name2].step_y, facecolor='blue', alpha=0.2)
 
         ax.spines['top'].set_visible(False)
         ax.spines['right'].set_visible(False)
@@ -118,12 +130,12 @@ class Plot(object):
         ax.set_ylim(1E2, 1E13)
 
         style = {'color': 'red',  'linewidth': 0.7, 'label': 'default spectrum'}
-        ax.plot(self.nebp_spectrum.step_x, self.nebp_spectrum.step_y, **style)
+        ax.plot(ds.step_x, ds.step_y, **style)
         style = {'color': 'green', 'linestyle': '--', 'linewidth': 0.7, 'label': 'gravel'}
         ax.plot(self.data[name1].step_x, self.data[name1].step_y, **style)
 
-        ax.fill_between(self.nebp_spectrum.step_x, 0, self.nebp_spectrum.step_y, facecolor='red', alpha=0.2)
-        ax.fill_between(self.nebp_spectrum.step_x, 0, self.data[name1].step_y, facecolor='green', alpha=0.2)
+        ax.fill_between(ds.step_x, 0, ds.step_y, facecolor='red', alpha=0.2)
+        ax.fill_between(ds.step_x, 0, self.data[name1].step_y, facecolor='green', alpha=0.2)
 
         ax.spines['top'].set_visible(False)
         ax.spines['right'].set_visible(False)
@@ -144,16 +156,16 @@ class Plot(object):
         style = {'color': 'black',  'linewidth': 0.7, 'label': 'reference'}
         ax.plot([1E-11, 20], [1, 1], **style)
 
-        gravel_ratio = abs(self.data[name1].step_y / self.nebp_spectrum.step_y)
+        gravel_ratio = abs(self.data[name1].step_y / ds.step_y)
         style = {'color': 'green',  'linewidth': 0.7, 'label': 'gravel'}
         ax.plot(self.data[name1].step_x, gravel_ratio, **style)
 
-        maxed_ratio = abs(self.data[name2].step_y / self.nebp_spectrum.step_y)
+        maxed_ratio = abs(self.data[name2].step_y / ds.step_y)
         style = {'color': 'blue',  'linewidth': 0.7, 'label': 'maxed'}
         ax.plot(self.data[name2].step_x, maxed_ratio, **style)
 
-        ax.fill_between(self.nebp_spectrum.step_x, 1, maxed_ratio, facecolor='blue', alpha=0.2)
-        ax.fill_between(self.nebp_spectrum.step_x, 1, gravel_ratio, facecolor='green', alpha=0.2)
+        ax.fill_between(ds.step_x, 1, maxed_ratio, facecolor='blue', alpha=0.2)
+        ax.fill_between(ds.step_x, 1, gravel_ratio, facecolor='green', alpha=0.2)
 
         ax.legend(frameon=False)
         fig.savefig('unfolded_{}_ratios.png'.format(savename), dpi=300)

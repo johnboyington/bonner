@@ -5,6 +5,7 @@ and gravel for unfolding a spectrum using generic bonner response functions.
 
 from unfolding_tools import Unfolding
 import numpy as np
+from spectrum import Spectrum
 from lwr_spectrum import FluxTypical
 from nebp_spectrum import FluxNEBP
 import shutil
@@ -70,11 +71,25 @@ class Experiment(object):
         self.nebp_spectrum = FluxNEBP(250)
         print('    NEBP Spectrum Loaded\n')
 
+    def load_filtered_spectrum(self):
+        print('Loading Filtered Spectrum...')
+        bins = np.loadtxt('scale56.txt')
+        # calculate neutron scaling factor
+        tally_area = tally_area = np.pi * (1.27 ** 2)
+        cn = 2.54 / (200 * 1.60218e-13 * tally_area)
+        cn *= 7.53942E-8
+        cn *= 250  # normalize to 250 W(th)
+        n_fil = np.loadtxt('n_fil.txt')
+        n_fil = n_fil.T[1][1:] * cn
+        self.filtered_spectrum = Spectrum(bins, n_fil)
+        print('    Filtered Spectrum Loaded\n')
+
     def load_data(self):
         self.load_responses()
         self.load_response_functions()
         self.load_typical_spectrum()
         self.load_nebp_spectrum()
+        self.load_filtered_spectrum()
 
     def run_set(self, response, ds, name):
         # run with a given set of data
@@ -94,20 +109,14 @@ class Experiment(object):
         print('Running First Experimental Responses, NEBP Spectrum...')
         self.run_set(self.experimental_response, self.nebp_spectrum, 'ex_ne')
 
-        print('Running First Experimental Responses, Typical LWR Spectrum...')
-        self.run_set(self.experimental_response, self.typical_spectrum, 'ex_ty')
-
         print('Running Second Experimental Responses, NEBP Spectrum...')
         self.run_set(self.experimental_response2, self.nebp_spectrum, 'e2_ne')
-
-        print('Running Second Experimental Responses, Typical LWR Spectrum...')
-        self.run_set(self.experimental_response2, self.typical_spectrum, 'e2_ty')
 
         print('Running Third Experimental Responses, NEBP Spectrum...')
         self.run_set(self.experimental_response3, self.nebp_spectrum, 'e3_ne')
 
-        print('Running Third Experimental Responses, Typical LWR Spectrum...')
-        self.run_set(self.experimental_response3, self.typical_spectrum, 'e3_ty')
+        print('Running Third Experimental Responses, Filtered NEBP Spectrum...')
+        self.run_set(self.experimental_response3, self.filtered_spectrum, 'e3_fi')
 
         print('Running Theoretical Responses, NEBP Spectrum...')
         self.run_set(self.theoretical_response, self.nebp_spectrum, 'th_ne')
