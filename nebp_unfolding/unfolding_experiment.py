@@ -79,7 +79,7 @@ class Experiment(object):
         cn = 2.54 / (200 * 1.60218e-13 * tally_area)
         cn *= 7.53942E-8
         cn *= 250  # normalize to 250 W(th)
-        n_fil = np.loadtxt('n_fil.txt')
+        n_fil = np.loadtxt('n_fil2.txt')
         n_fil = n_fil.T[1][1:] * cn
         self.filtered_spectrum = Spectrum(bins, n_fil)
         print('    Filtered Spectrum Loaded\n')
