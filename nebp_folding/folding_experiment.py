@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import rc, rcParams
+from spectrum import Spectrum
 from lwr_spectrum import FluxTypical
 from nebp_spectrum import FluxNEBP
 from folding import Folding
@@ -16,9 +17,11 @@ class Folding_Experiment(object):
         self.normalize_experimental_responses()
         self.fold_typical()
         self.fold_nebp()
+        self.fold_filtered()
         self.plot_responses()
         self.plot_theoretical()
         self.plot_experimental()
+        self.plot_filtered()
         self.plot_diffs()
         # self.plot_robert()
 
@@ -36,9 +39,10 @@ class Folding_Experiment(object):
         self.c = 1.774E-2 * (1/4)
 
     def normalize_experimental_responses(self):
-        # TODO: subtract background
+        bg = np.loadtxt('bonner_data_bg.txt', skiprows=1)
         s = 5 * 60  # 5 minutes
         r = np.loadtxt('bonner_data.txt', skiprows=1)
+        r -= bg
         powers = np.full(len(r), 250) / np.array([25.2, 25.15, 25.15, 25.13, 25.13, 25.15, 25.15])
         # efficiency_correction
         e = 1
@@ -47,6 +51,7 @@ class Folding_Experiment(object):
         # load 2nd dataset
         s = 5 * 60  # 5 minutes
         r = np.loadtxt('bonner_data2.txt', skiprows=1)
+        r -= bg
         powers = (250 / 24.86)
         # efficiency_correction
         e = 1
@@ -55,6 +60,7 @@ class Folding_Experiment(object):
         # load 3rd (filtered) dataset
         s = 5 * 60  # 5 minutes
         r = np.loadtxt('bonner_data3.txt', skiprows=1)
+        r -= bg
         powers = (250 / 24.86)
         # efficiency_correction
         e = 1
@@ -81,6 +87,30 @@ class Folding_Experiment(object):
         print('Typical total flux: {}'.format(fold.spectrum.total_flux))
         fold.set_response_functions(rfs)
         self.typical_response = fold.fold()
+
+    def fold_filtered(self):
+        # input response matrix
+        genericData = np.loadtxt('nebp_response_functions.txt')
+        genericData = genericData.reshape(7, -1, 4)
+        rfs = genericData[:, :, 2]
+
+        # produce spectrum object for nebp
+        bins = np.loadtxt('scale56.txt')
+        # calculate neutron scaling factor
+        tally_area = tally_area = np.pi * (1.27 ** 2)
+        cn = 2.54 / (200 * 1.60218e-13 * tally_area)
+        cn *= 7.53942E-8
+        cn *= 250  # normalize to 250 W(th)
+        n_fil = np.loadtxt('n_fil2.txt')
+        n_fil = n_fil.T[1][1:] * cn
+        f = Spectrum(bins, n_fil)
+
+        # create and test object
+        fold = Folding(sf=self.c)
+        fold.set_spectrum(f)
+        print('Typical total flux: {}'.format(fold.spectrum.total_flux))
+        fold.set_response_functions(rfs)
+        self.filtered_response = fold.fold()
 
     def fold_nebp(self):
         # input response matrix
@@ -120,6 +150,10 @@ class Folding_Experiment(object):
                  'markeredgecolor': 'blue', 'linestyle': 'None', 'label': 'Theoretical NEBP',
                  'mew': 0.5, 'ms': 6}
         ax.plot(self.sizes, self.nebp_response, **style)
+        style = {'color': 'orange', 'marker': 'o', 'markerfacecolor': 'None',
+                 'markeredgecolor': 'orange', 'linestyle': 'None', 'label': 'Theoretical NEBP Filtered',
+                 'mew': 0.5, 'ms': 6}
+        ax.plot(self.sizes, self.filtered_response, **style)
         ax.set_xticks(self.sizes)
         ax.set_xticklabels(['Bare'] + self.sizes[1:])
         ax.spines['top'].set_visible(False)
@@ -180,6 +214,27 @@ class Folding_Experiment(object):
         ax.spines['right'].set_visible(False)
         ax.legend()
         fig.savefig('responses_experimental.png', dpi=300)
+        plt.close(fig)
+
+    def plot_filtered(self):
+        fig = plt.figure(51)
+        ax = fig.add_subplot(111)
+        ax.set_ylabel('Response $s^{-1}$')
+        ax.set_xlabel('Sphere Size $in$')
+        style = {'color': 'green', 'marker': '^', 'markerfacecolor': 'None',
+                 'markeredgecolor': 'green', 'linestyle': 'None', 'label': 'Theoretical NEBP Filtered',
+                 'mew': 0.5, 'ms': 6}
+        ax.plot(self.sizes, self.filtered_response, **style)
+        style = {'color': 'indigo', 'marker': 'd', 'markerfacecolor': 'None',
+                 'markeredgecolor': 'indigo', 'linestyle': 'None', 'label': 'Experimental NEBP Filtered',
+                 'mew': 0.5, 'ms': 6}
+        ax.plot(self.sizes, self.experimental_responses3, **style)
+        ax.set_xticks(self.sizes)
+        ax.set_xticklabels(['Bare'] + self.sizes[1:])
+        ax.spines['top'].set_visible(False)
+        ax.spines['right'].set_visible(False)
+        ax.legend()
+        fig.savefig('responses_filtered.png', dpi=300)
         plt.close(fig)
 
     def plot_diffs(self):
