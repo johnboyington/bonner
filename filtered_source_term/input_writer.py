@@ -8,6 +8,7 @@ class Write(object):
         self.make_surfs(ny, nz)
         self.make_cells()
         self.make_imp(ny, nz)
+        self.make_tallies()
         self.write_input()
 
     def load_data(self):
@@ -58,6 +59,17 @@ class Write(object):
         n = 4 + (numy-1)*(numz-1)
         self.imp_s = 'IMP:n 1 {}r 0\nIMP:p 1 {}r 0\n'.format(n, n)
 
+    def make_tallies(self):
+        n = 300
+        self.tally_s = ''
+        for i, y in enumerate(self.y_data[:-1]):
+            for j, z in enumerate(self.z_data[:-1]):
+                form = n, self.y_data[i][0], self.y_data[i+1][0],  self.z_data[j][0], self.z_data[j+1][0]
+                self.tally_s += 'F{}1:n 133\n'.format(n)
+                self.tally_s += 'FS{}1    -{}  {}   -{}  {} \n'.format(*form)
+                self.tally_s += 'FC{}1 PIXEL{}\n'.format(n, n)
+                n += 1
+
     def write_input(self):
         self.inp = self.template[0]
         self.inp += self.cell_s
@@ -68,6 +80,7 @@ class Write(object):
         self.inp += self.template[3]
         self.inp += self.imp_s
         self.inp += self.template[4]
+        self.inp += self.tally_s
         self.inp += self.template[5]
         with open('input.inp', 'w') as F:
             F.write(self.inp)
