@@ -20,7 +20,7 @@ class Folding_Experiment(object):
         self.fold_filtered()
         self.plot_responses()
         self.plot_theoretical()
-        self.plot_experimental()
+        # self.plot_experimental()
         self.plot_filtered()
         self.plot_diffs()
         # self.plot_robert()
@@ -168,21 +168,17 @@ class Folding_Experiment(object):
         ax.set_ylabel('Response $s^{-1}$')
         ax.set_xlabel('Sphere Size $in$')
         style = {'color': 'red', 'marker': 'x', 'markerfacecolor': 'None',
-                 'markeredgecolor': 'red', 'linestyle': 'None', 'label': 'Theoretical NEBP',
+                 'markeredgecolor': 'red', 'linestyle': 'None', 'label': 'Theoretical',
                  'mew': 0.5, 'ms': 6}
         ax.plot(self.sizes, self.nebp_response, **style)
         style = {'color': 'blue', 'marker': 'o', 'markerfacecolor': 'None',
-                 'markeredgecolor': 'blue', 'linestyle': 'None', 'label': 'Experimental NEBP',
+                 'markeredgecolor': 'blue', 'linestyle': 'None', 'label': 'Experiment #1',
                  'mew': 0.5, 'ms': 6}
         ax.plot(self.sizes, self.experimental_responses, **style)
         style = {'color': 'green', 'marker': '^', 'markerfacecolor': 'None',
-                 'markeredgecolor': 'green', 'linestyle': 'None', 'label': 'Experimental NEBP #2',
+                 'markeredgecolor': 'green', 'linestyle': 'None', 'label': 'Experiment #2',
                  'mew': 0.5, 'ms': 6}
         ax.plot(self.sizes, self.experimental_responses2, **style)
-        style = {'color': 'indigo', 'marker': 'd', 'markerfacecolor': 'None',
-                 'markeredgecolor': 'indigo', 'linestyle': 'None', 'label': 'Experimental NEBP Filtered',
-                 'mew': 0.5, 'ms': 6}
-        ax.plot(self.sizes, self.experimental_responses3, **style)
         ax.set_xticks(self.sizes)
         ax.set_xticklabels(['Bare'] + self.sizes[1:])
         ax.spines['top'].set_visible(False)
@@ -221,8 +217,8 @@ class Folding_Experiment(object):
         ax = fig.add_subplot(111)
         ax.set_ylabel('Response $s^{-1}$')
         ax.set_xlabel('Sphere Size $in$')
-        style = {'color': 'green', 'marker': '^', 'markerfacecolor': 'None',
-                 'markeredgecolor': 'green', 'linestyle': 'None', 'label': 'Theoretical NEBP Filtered',
+        style = {'color': 'darkorange', 'marker': 'p', 'markerfacecolor': 'None',
+                 'markeredgecolor': 'darkorange', 'linestyle': 'None', 'label': 'Theoretical NEBP Filtered',
                  'mew': 0.5, 'ms': 6}
         ax.plot(self.sizes, self.filtered_response, **style)
         style = {'color': 'indigo', 'marker': 'd', 'markerfacecolor': 'None',
@@ -238,15 +234,20 @@ class Folding_Experiment(object):
         plt.close(fig)
 
     def plot_diffs(self):
-        diffs = abs(100 * (self.experimental_responses - self.nebp_response) / self.experimental_responses)
+        diffs1 = 100 * (self.experimental_responses - self.nebp_response) / self.experimental_responses
+        diffs2 = 100 * (self.experimental_responses2 - self.nebp_response) / self.experimental_responses2
         fig = plt.figure(52)
         ax = fig.add_subplot(111)
         ax.set_ylabel('Relative Error %')
         ax.set_xlabel('Sphere Size $in$')
-        style = {'color': 'orange', 'marker': 'v', 'markerfacecolor': 'None',
-                 'markeredgecolor': 'orange', 'linestyle': 'None', 'label': 'Theoretical NEBP',
+        style = {'color': 'blue', 'marker': 'o', 'markerfacecolor': 'None',
+                 'markeredgecolor': 'blue', 'linestyle': 'None', 'label': 'Experiment #1',
                  'mew': 0.5, 'ms': 6}
-        ax.plot(self.sizes, diffs, **style)
+        ax.plot(self.sizes, diffs1, **style)
+        style = {'color': 'green', 'marker': '^', 'markerfacecolor': 'None',
+                 'markeredgecolor': 'green', 'linestyle': 'None', 'label': 'Experiment #2',
+                 'mew': 0.5, 'ms': 6}
+        ax.plot(self.sizes, diffs2, **style)
         ax.set_xticks(self.sizes)
         ax.set_xticklabels(['Bare'] + self.sizes[1:])
         ax.spines['top'].set_visible(False)

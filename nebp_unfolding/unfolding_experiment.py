@@ -84,12 +84,20 @@ class Experiment(object):
         self.filtered_spectrum = Spectrum(bins, n_fil)
         print('    Filtered Spectrum Loaded\n')
 
+    def load_unity_spectrum(self):
+        print('Loading Unity Spectrum...')
+        bins = np.loadtxt('scale56.txt')
+        ones = np.ones(len(bins) - 1)
+        self.unity_spectrum = Spectrum(bins, ones, dfde=True)
+        print('    Unity Spectrum Loaded\n')
+
     def load_data(self):
         self.load_responses()
         self.load_response_functions()
         self.load_typical_spectrum()
         self.load_nebp_spectrum()
         self.load_filtered_spectrum()
+        self.load_unity_spectrum()
 
     def run_set(self, response, ds, name):
         # run with a given set of data
@@ -117,6 +125,9 @@ class Experiment(object):
 
         print('Running Third Experimental Responses, Filtered NEBP Spectrum...')
         self.run_set(self.experimental_response3, self.filtered_spectrum, 'e3_fi')
+
+        print('Running Third Experimental Responses, Unity Spectrum...')
+        self.run_set(self.experimental_response3, self.unity_spectrum, 'e3_un')
 
         print('Running Theoretical Responses, NEBP Spectrum...')
         self.run_set(self.theoretical_response, self.nebp_spectrum, 'th_ne')

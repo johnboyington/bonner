@@ -45,12 +45,17 @@ class Plot(object):
         n_fil = n_fil.T[1][1:] * cn
         self.filtered_spectrum = Spectrum(self.edges, n_fil)
 
+        # load unity spectrum
+        ones = np.ones(len(self.edges) - 1)
+        self.unity_spectrum = Spectrum(self.edges, ones, dfde=True)
+
         # load unfolded data
         self.data = {}
         self.datasets = ['ex_ne_gr', 'ex_ne_mx',
                          'e2_ne_gr', 'e2_ne_mx',
                          'e3_ne_gr', 'e3_ne_mx',
                          'e3_fi_gr', 'e3_fi_mx',
+                         'e3_un_gr', 'e3_un_mx',
                          'th_ne_gr', 'th_ne_mx']
         for name in self.datasets:
             self.load_dataset(name)
@@ -66,13 +71,14 @@ class Plot(object):
         rcParams.update({'figure.autolayout': True})
 
     def plot_all(self):
-        self.plot('ex_ne_gr', 'ex_ne_mx', '1', self.nebp_spectrum)
-        self.plot('e2_ne_gr', 'e2_ne_mx', '2', self.nebp_spectrum)
-        self.plot('e3_ne_gr', 'e3_ne_mx', '3', self.nebp_spectrum)
-        self.plot('e3_fi_gr', 'e3_fi_mx', 'filtered', self.filtered_spectrum)
-        self.plot('th_ne_gr', 'th_ne_mx', 'theoretical', self.nebp_spectrum)
+        self.plot('ex_ne_gr', 'ex_ne_mx', '1', self.nebp_spectrum, (1E2, 1E13))
+        self.plot('e2_ne_gr', 'e2_ne_mx', '2', self.nebp_spectrum, (1E2, 1E13))
+        self.plot('e3_ne_gr', 'e3_ne_mx', '3', self.nebp_spectrum, (1E2, 1E13))
+        self.plot('e3_un_gr', 'e3_un_mx', 'unity', self.unity_spectrum, (1E-1, 1E11))
+        self.plot('e3_fi_gr', 'e3_fi_mx', 'filtered', self.filtered_spectrum, (1E0, 1E13))
+        self.plot('th_ne_gr', 'th_ne_mx', 'theoretical', self.nebp_spectrum, (1E2, 1E13))
 
-    def plot(self, name1, name2, savename, ds):
+    def plot(self, name1, name2, savename, ds, ylims=False):
         fig = plt.figure(0)
         ax = fig.add_subplot(111)
         ax.set_xscale('log')
@@ -80,13 +86,13 @@ class Plot(object):
         ax.set_xlabel('Energy $MeV$')
         ax.set_ylabel('Flux $cm^{-2}s^{-1}MeV^{-1}$')
         ax.set_xlim(1E-9, 20)
-        ax.set_ylim(1E2, 1E13)
+        ax.set_ylim(*ylims)
 
-        style = {'color': 'red',  'linewidth': 0.7, 'label': 'default spectrum'}
+        style = {'color': 'red',  'linewidth': 0.7, 'label': 'Default Spectrum'}
         ax.plot(ds.step_x, ds.step_y, **style)
-        style = {'color': 'green', 'linestyle': '--', 'linewidth': 0.7, 'label': 'gravel'}
+        style = {'color': 'green', 'linestyle': '--', 'linewidth': 0.7, 'label': 'Gravel'}
         ax.plot(self.data[name1].step_x, self.data[name1].step_y, **style)
-        style = {'color': 'blue', 'linestyle': '-.', 'linewidth': 0.7, 'label': 'maxed'}
+        style = {'color': 'blue', 'linestyle': '-.', 'linewidth': 0.7, 'label': 'Maxed'}
         ax.plot(self.data[name2].step_x, self.data[name2].step_y, **style)
 
         ax.spines['top'].set_visible(False)
@@ -103,11 +109,11 @@ class Plot(object):
         ax.set_xlabel('Energy $MeV$')
         ax.set_ylabel('Flux $cm^{-2}s^{-1}MeV^{-1}$')
         ax.set_xlim(1E-9, 20)
-        ax.set_ylim(1E2, 1E13)
+        ax.set_ylim(*ylims)
 
-        style = {'color': 'red',  'linewidth': 0.7, 'label': 'default spectrum'}
+        style = {'color': 'red',  'linewidth': 0.7, 'label': 'Default Spectrum'}
         ax.plot(ds.step_x, ds.step_y, **style)
-        style = {'color': 'blue', 'linestyle': '-.', 'linewidth': 0.7, 'label': 'maxed'}
+        style = {'color': 'blue', 'linestyle': '-.', 'linewidth': 0.7, 'label': 'Maxed'}
         ax.plot(self.data[name2].step_x, self.data[name2].step_y, **style)
 
         ax.fill_between(ds.step_x, 0, ds.step_y, facecolor='red', alpha=0.2)
@@ -127,11 +133,11 @@ class Plot(object):
         ax.set_xlabel('Energy $MeV$')
         ax.set_ylabel('Flux $cm^{-2}s^{-1}MeV^{-1}$')
         ax.set_xlim(1E-9, 20)
-        ax.set_ylim(1E2, 1E13)
+        ax.set_ylim(ylims)
 
-        style = {'color': 'red',  'linewidth': 0.7, 'label': 'default spectrum'}
+        style = {'color': 'red',  'linewidth': 0.7, 'label': 'Default Spectrum'}
         ax.plot(ds.step_x, ds.step_y, **style)
-        style = {'color': 'green', 'linestyle': '--', 'linewidth': 0.7, 'label': 'gravel'}
+        style = {'color': 'green', 'linestyle': '--', 'linewidth': 0.7, 'label': 'Gravel'}
         ax.plot(self.data[name1].step_x, self.data[name1].step_y, **style)
 
         ax.fill_between(ds.step_x, 0, ds.step_y, facecolor='red', alpha=0.2)
@@ -153,15 +159,15 @@ class Plot(object):
         ax.set_xlim(1E-9, 20)
         ax.set_ylim(1E-2, 1E2)
 
-        style = {'color': 'black',  'linewidth': 0.7, 'label': 'reference'}
+        style = {'color': 'black',  'linewidth': 0.7, 'label': 'Reference'}
         ax.plot([1E-11, 20], [1, 1], **style)
 
         gravel_ratio = abs(self.data[name1].step_y / ds.step_y)
-        style = {'color': 'green',  'linewidth': 0.7, 'label': 'gravel'}
+        style = {'color': 'green',  'linewidth': 0.7, 'label': 'Gravel'}
         ax.plot(self.data[name1].step_x, gravel_ratio, **style)
 
         maxed_ratio = abs(self.data[name2].step_y / ds.step_y)
-        style = {'color': 'blue',  'linewidth': 0.7, 'label': 'maxed'}
+        style = {'color': 'blue',  'linewidth': 0.7, 'label': 'Maxed'}
         ax.plot(self.data[name2].step_x, maxed_ratio, **style)
 
         ax.fill_between(ds.step_x, 1, maxed_ratio, facecolor='blue', alpha=0.2)
