@@ -32,7 +32,7 @@ class Plot(object):
         ax.add_patch(circ)
         fig.colorbar(im)
 
-        for i, e in enumerate(self.energies[1::-1]):
+        for i, e in enumerate(self.energies[-1::-1]):
             group = len(self.energies[:-2]) - i
             fig = plt.figure(i, figsize=(9.62, 5.08))
             ax = fig.add_subplot(111)
