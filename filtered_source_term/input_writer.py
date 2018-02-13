@@ -4,6 +4,7 @@ import numpy as np
 class Write(object):
     def __init__(self):
         ny, nz = 10, 10
+        self.energies = np.array([1E-11, 0.5, 20])
         self.template = self.load_data()
         self.make_surfs(ny, nz)
         self.make_cells()
@@ -62,13 +63,25 @@ class Write(object):
     def make_tallies(self):
         n = 300
         self.tally_s = ''
+        e_string = self.string_energies(self.energies)
         for i, y in enumerate(self.y_data[:-1]):
             for j, z in enumerate(self.z_data[:-1]):
                 form = n, self.y_data[i][0], self.y_data[i+1][0],  self.z_data[j][0], self.z_data[j+1][0]
                 self.tally_s += 'F{}1:n 133\n'.format(n)
                 self.tally_s += 'FS{}1    -{}  {}   -{}  {} \n'.format(*form)
+                self.tally_s += 'E{}    {}\n'.format(n, e_string)
                 self.tally_s += 'FC{}1 PIXEL{}\n'.format(n, n)
                 n += 1
+
+    def string_energies(self, bins):
+        n = 1
+        s = ''
+        for e in bins:
+            s += '{:9.6e}  '.format(e)
+            if not n % 4:
+                s += '\n        '
+            n += 1
+        return s
 
     def write_input(self):
         self.inp = self.template[0]

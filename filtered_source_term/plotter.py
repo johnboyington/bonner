@@ -16,7 +16,8 @@ class Plot(object):
     def make_image(self):
         fig = plt.figure(0, figsize=(9.62, 5.08))
         ax = fig.add_subplot(111)
-        im = ax.imshow(self.data, aspect='auto', cmap='YlGnBu')
+        im = ax.imshow(self.data, aspect='auto', cmap='pink', extent=[-7.62, 7.62, -5.08, 5.08])
+        # ax.set_xlabel([-7.62, 7.62])
         fig.colorbar(im)
         ax.set_xlabel('y')
         ax.set_ylabel('z')
