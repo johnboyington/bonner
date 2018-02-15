@@ -1,0 +1,11 @@
+This repository contains data used to produce response functions for bonner
+spheres for the KSU TRIGA Mark II nuclear reactor's North East (Penetrating)
+beam port. These are going to be closer to the ones originally used from a 
+paper by DECKER in my experiments.
+
+Features
+ - Constant BP size
+ - New Energy Bins (scale56)
+ - Non-mono-energetic; distributed over range
+ - Angle Dependent
+
