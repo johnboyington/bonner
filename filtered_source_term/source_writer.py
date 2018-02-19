@@ -1,0 +1,110 @@
+import values
+import numpy as np
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+
+
+class Source(object):
+    def __init__(self):
+        self.s = ''
+        self.energies = values.energies
+        self.load_data()
+        self.cals_divs()
+        self.write_header()
+        self.add_positions()
+
+    def load_data(self):
+        self.data = np.loadtxt('data.txt')
+        self.data = self.data.T
+        self.data = self.data[0]
+        self.max = max(self.data)
+        self.min = min(self.data)
+        self.data = self.data.reshape(values.numy, values.numz, len(self.energies))
+        self.totals = self.data[:, :, -1]
+        self.data = self.data[:, :, :]  # keep last column as opposed to plotter
+
+    def write_header(self):
+        y_diff = (self.y_div[1] - self.y_div[0]) / 2
+        z_diff = (self.z_div[1] - self.z_div[0]) / 2
+        self.s += 'c  ---------------------------------------------------------\n'
+        self.s += 'c                    SOURCE SPECIFICATIONS\n'
+        self.s += 'c                    For the Filtered NEBP\n'
+        self.s += 'c  ---------------------------------------------------------\n'
+        self.s += 'SDEF POS=D1  ERG=FPOS=D2 \n'
+        self.s += '        Y=-{:.5f} {:.5f} Z=-{:.5f} {:.5f}\n'.format(y_diff, y_diff, z_diff, z_diff)
+        self.s += '        DIR=1 PAR=1 AXS=1 0 0 VEC=1 0 0\n'
+
+    def card(self, card, data, elements=5):
+        '''
+        Function: cardWriter
+
+        This will write multiline cards for SI and SP distributions for mcnp inputs
+
+        Input Data:
+            card - name and number of the card
+            data array - a numpy array containing the data you'd like placed in the card.
+            Outputs:
+                a string that can be copied and pasted into an mcnp input file
+        '''
+        s = '{}   '.format(card)
+        empty_card = '   ' + ' ' * len(card)
+        elements_per_row = elements
+        row_counter = 0
+        element = '{:6}  ' if data.dtype in ['int32', 'int64'] else '{:14.6e}  '
+        for i, d in enumerate(data):
+            s += element.format(d)
+            row_counter += 1
+            if row_counter == elements_per_row and i + 1 != len(data):
+                row_counter = 0
+                s += '\n{}'.format(empty_card)
+        s += '\n'
+        return s
+
+    def cals_divs(self):
+        # calculate the midpoints of each pixel
+        self.y_div = np.linspace(values.y_min, values.y_max, values.numy + 1)
+        self.y_mids = (self.y_div[1:] + self.y_div[:-1]) / 2
+        # repeat for z values
+        self.z_div = np.linspace(values.z_min, values.z_max, values.numz + 1)
+        self.z_mids = (self.z_div[1:] + self.z_div[:-1]) / 2
+
+    def add_positions(self):
+        points = []
+        for i in self.y_mids:
+            for j in self.z_mids:
+                points.append(0.000)
+                points.append(i)
+                points.append(j)
+        points = np.array(points)
+        self.s += self.card('SI1  L  ', points, 3)
+        self.s += self.card('SP1     ', self.totals.flatten(), 4)
+
+        # make quick 3d plot to check if its good
+        xx, yy = np.meshgrid(self.y_mids, self.z_mids)
+        fig = plt.figure(0)
+        ax = fig.add_subplot(111, projection='3d')
+        ax.plot_surface(xx, yy, self.totals, cmap='plasma')
+        plt.show()
+
+        # add each energy distribution
+        dist = np.arange(100, 100+len(self.totals.flatten()))
+        self.s += self.card('DS2  S  ', dist, 7)
+        d = 100
+        for i in range(len(self.y_mids)):
+            for j in range(len(self.y_mids)):
+                erg_dist = self.data[i][j]
+                self.s += self.card('SP{}  H  '.format(d), self.energies, 4)
+                self.s += self.card('SP{}  D  '.format(d), erg_dist, 4)
+                d += 1
+
+    def txt(self):
+        with open('filtered_source.sdef', 'w+') as F:
+            F.write(self.s)
+
+    def sr(self):
+        ''' Returns a string representation of the source term.'''
+        return self.s
+
+brick = Source()
+brick.txt()
+#print(brick.sr())

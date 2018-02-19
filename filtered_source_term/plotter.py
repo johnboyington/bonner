@@ -36,6 +36,7 @@ class Plot(object):
                         self.totals[i, j] = 0.0
         args = {'aspect': 'auto', 'cmap': 'pink', 'extent': [-7.62, 7.62, -5.08, 5.08], 'vmin': self.min, 'vmax': self.max}
         im = ax.imshow(self.totals, **args)
+        print(self.totals.shape)
         circ = Circle((0, 0), 2.54/2, fill=False)
         ax.add_patch(circ)
         fig.colorbar(im)
