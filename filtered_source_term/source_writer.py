@@ -98,7 +98,7 @@ class Source(object):
             for j in range(len(self.y_mids)):
                 erg_dist = self.data[i][j]
                 self.s += self.card('SP{}  H  '.format(d), self.energies, 4)
-                self.s += self.card('SP{}  D  '.format(d), erg_dist, 4)
+                self.s += self.card('SI{}  D  '.format(d), erg_dist, 4)
                 d += 1
 
     def txt(self):
