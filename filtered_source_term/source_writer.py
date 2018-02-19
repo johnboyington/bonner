@@ -14,16 +14,18 @@ class Source(object):
         self.add_positions()
 
     def load_data(self):
+        ''' Loads the source data in from a text file and parses out the
+        totals and the data while removing the error'''
         self.data = np.loadtxt('data.txt')
         self.data = self.data.T
         self.data = self.data[0]
-        self.max = max(self.data)
-        self.min = min(self.data)
         self.data = self.data.reshape(values.numy, values.numz, len(self.energies))
         self.totals = self.data[:, :, -1]
         self.data = self.data[:, :, :]  # keep last column as opposed to plotter
 
     def write_header(self):
+        '''Writes the header for the MCNP SDEF'''
+        # calculate the pixel height and width
         y_diff = (self.y_div[1] - self.y_div[0]) / 2
         z_diff = (self.z_div[1] - self.z_div[0]) / 2
         self.s += 'c  ---------------------------------------------------------\n'
@@ -69,6 +71,7 @@ class Source(object):
         self.z_mids = (self.z_div[1:] + self.z_div[:-1]) / 2
 
     def add_positions(self):
+        # create all of the points for the sdef
         points = []
         for i in self.y_mids:
             for j in self.z_mids:
@@ -76,6 +79,7 @@ class Source(object):
                 points.append(i)
                 points.append(j)
         points = np.array(points)
+        # add the midpoints and pdf values for each pixel
         self.s += self.card('SI1  L  ', points, 3)
         self.s += self.card('SP1     ', self.totals.flatten(), 4)
 
@@ -98,6 +102,7 @@ class Source(object):
                 d += 1
 
     def txt(self):
+        ''' Write the data to a text file.'''
         with open('filtered_source.sdef', 'w+') as F:
             F.write(self.s)
 
@@ -107,4 +112,3 @@ class Source(object):
 
 brick = Source()
 brick.txt()
-#print(brick.sr())
