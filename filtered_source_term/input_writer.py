@@ -4,12 +4,11 @@ import numpy as np
 
 class Write(object):
     def __init__(self):
-        ny, nz = values.numy + 1, values.numz + 1
         self.energies = values.energies
         self.template = self.load_data()
-        self.make_surfs(ny, nz)
+        self.make_surfs()
         self.make_cells()
-        self.make_imp(ny, nz)
+        self.make_imp()
         self.make_tallies()
         self.write_input()
 
@@ -18,20 +17,16 @@ class Write(object):
         template = f.read()
         return template.split('*FLAG*')
 
-    def make_surfs(self, numy, numz):
+    def make_surfs(self):
         y_init = 200
         z_init = 300
-        y_min = -5.08
-        y_max = 5.08
-        z_min = -7.62
-        z_max = 7.62
-        y_div = np.linspace(y_min, y_max, numy)
+        y_div = np.linspace(values.y_min, values.y_max, values.numy + 1)
         self.y_s = ''
         self.y_data = []
         for i, y in enumerate(y_div):
             self.y_data += [(i + y_init, y)]
             self.y_s += '{} PY {:9.6f}\n'.format(i + y_init, y)
-        z_div = np.linspace(z_min, z_max, numz)
+        z_div = np.linspace(values.z_min, values.z_max, values.numz + 1)
         self.z_s = ''
         self.z_data = []
         for i, z in enumerate(z_div):
@@ -57,8 +52,8 @@ class Write(object):
         ps2 = '91 0 -130 -32'
         self.cell_s += 'c\n{}\nc\n{}\nc\n'.format(ps, ps2)
 
-    def make_imp(self, numy, numz):
-        n = 4 + (numy-1)*(numz-1)
+    def make_imp(self):
+        n = 4 + (values.numy)*(values.numz)
         self.imp_s = 'IMP:n 1 {}r 0\nIMP:p 1 {}r 0\n'.format(n, n)
 
     def make_tallies(self):

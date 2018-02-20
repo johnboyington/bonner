@@ -1,0 +1,29 @@
+DT neutron beam, poly slab, detector
+c GEOMETRY - CELLS
+100    0              -10      imp:n=0    $ void to left, kill neutrons
+200    0              +10 -20  imp:n=1    $ void to left  of slab
+300    1000   -0.93   +20 -30  imp:n=1    $ poly slab, rho=.93 g/cc
+400    0              +30 -40  imp:n=1    $ void to right of slab
+500    0              +40      imp:n=0    $ void to right, kill neutrons
+
+c GEOMETRY - SURFACES
+10     px     -5.0                        $ x-plane, problem left  boundary
+20     px      5.0                        $ x-plane, left  side of poly slab
+30     px     10.0                        $ x-plane, right side of poly slab
+40     px     25.0                        $ x-plane, problem right boundary
+
+c OTHER STUFF
+c
+nps     1e5                               $ number of neutrons to run
+c
+c MATERIALS - poly
+m1000    1001  2       6000  1
+c
+c
+c POINT DETECTOR
+f2:n  30
+c
+vol  0 1 1 1 0
+area 0 1 1 0
+c
+c SOURCE
