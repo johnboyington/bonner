@@ -1,0 +1,9 @@
+bonner sphere response data from first in-beam test
+5 min count; power 25 W(th)
+141585
+102435
+76796
+38056
+13923
+8091
+4834

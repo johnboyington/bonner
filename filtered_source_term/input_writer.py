@@ -91,7 +91,7 @@ class Write(object):
         self.inp += self.template[4]
         self.inp += self.tally_s
         self.inp += self.template[5]
-        with open('input.inp', 'w') as F:
+        with open('data/input.inp', 'w') as F:
             F.write(self.inp)
 
 

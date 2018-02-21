@@ -17,7 +17,7 @@ class Plot(object):
 
     def load_data(self, flag):
         # load in data from file
-        self.data = np.loadtxt('data.txt')
+        self.data = np.loadtxt('data/data.txt', skiprows=3)
         # transpose data matrix
         self.data = self.data.T
         # grab either the values or the errors (flag 0 or 1)
