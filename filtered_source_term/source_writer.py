@@ -24,22 +24,25 @@ class Source(object):
         self.totals = self.data[:, :, -1]
         self.data = self.data[:, :, :]  # keep last column as opposed to plotter
 
-    def calc_total_flux(self):
-        '''Calculates the departing flux relative to that of the NEBP source'''
-        self.total_flux = np.sum(self.totals)
+    def calc_wgt(self):
+        '''Calculates the weight to represent the reactor at 250W(th)'''
+        total_flux = np.sum(self.totals)
+        tally_area = tally_area = np.pi * (1.27 ** 2)
+        C = 2.54 / (200 * 1.60218e-13)
+        self.wgt
 
     def write_header(self):
         '''Writes the header for the MCNP SDEF'''
         self.s += 'c  ---------------------------------------------------------\n'
         self.s += 'c                    SOURCE SPECIFICATIONS\n'
-        self.s += 'c                    For the Filtered NEBP\n'
+        self.s += 'c               For the Filtered NEBP at 250 W(th)\n'
         self.s += 'c  ---------------------------------------------------------\n'
-        self.s += 'SDEF    X=0 Y=D1 Z=D2 POS=D3  ERG=FPOS=D4 \n'
+        self.s += 'SDEF    X=0 Y=D1 Z=D2 POS=D3  ERG=FPOS=D4 WGT={:14.6e}\n'.format(self.wgt)
         self.s += '        DIR=1 PAR=1 AXS=1 0 0 VEC=1 0 0\n'
 
     def card(self, card, data, elements=5):
         '''
-        Function: cardWriter
+        Function: card
 
         This will write multiline cards for SI and SP distributions for mcnp inputs
 
