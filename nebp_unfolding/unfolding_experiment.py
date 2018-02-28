@@ -8,6 +8,7 @@ import numpy as np
 from spectrum import Spectrum
 from lwr_spectrum import FluxTypical
 from nebp_spectrum import FluxNEBP
+import experimental_data
 import shutil
 
 
@@ -18,35 +19,6 @@ class Experiment(object):
         self.run_all()
 
     def load_responses(self):
-        print('Loading Detector Response Data...')
-        bg = np.loadtxt('bonner_data_bg.txt', skiprows=1)
-
-        s = 5 * 60  # 5 minutes
-        r = np.loadtxt('bonner_data.txt', skiprows=1)
-        r -= bg
-        powers = np.full(len(r), 250) / np.array([25.2, 25.15, 25.15, 25.13, 25.13, 25.15, 25.15])
-        # efficiency_correction
-        e = 1
-        self.experimental_response = r * powers * (1 / e) * (1 / s)
-
-        # load 2nd dataset
-        s = 5 * 60  # 5 minutes
-        r = np.loadtxt('bonner_data2.txt', skiprows=1)
-        r -= bg
-        powers = (250 / 24.86)
-        # efficiency_correction
-        e = 1
-        self.experimental_response2 = r * powers * (1 / e) * (1 / s)
-
-        # load 3rd (filtered) dataset
-        s = 5 * 60  # 5 minutes
-        r = np.loadtxt('bonner_data3.txt', skiprows=1)
-        r -= bg
-        powers = (250 / 24.86)
-        # efficiency_correction
-        e = 1
-        self.experimental_response3 = r * powers * (1 / e) * (1 / s)
-        print('    Experimental Response Data Loaded')
         self.theoretical_response = np.loadtxt('nebp_theoretical_response.txt')
         print('    Theoretical Response Data Loaded\n')
 
@@ -115,19 +87,19 @@ class Experiment(object):
     def run_all(self):
         print('\n')
         print('Running First Experimental Responses, NEBP Spectrum...')
-        self.run_set(self.experimental_response, self.nebp_spectrum, 'ex_ne')
+        self.run_set(experimental_data.unfiltered1.values, self.nebp_spectrum, 'ex_ne')
 
         print('Running Second Experimental Responses, NEBP Spectrum...')
-        self.run_set(self.experimental_response2, self.nebp_spectrum, 'e2_ne')
+        self.run_set(experimental_data.unfiltered2.values, self.nebp_spectrum, 'e2_ne')
 
         print('Running Third Experimental Responses, NEBP Spectrum...')
-        self.run_set(self.experimental_response3, self.nebp_spectrum, 'e3_ne')
+        self.run_set(experimental_data.filtered2.values, self.nebp_spectrum, 'e3_ne')
 
         print('Running Third Experimental Responses, Filtered NEBP Spectrum...')
-        self.run_set(self.experimental_response3, self.filtered_spectrum, 'e3_fi')
+        self.run_set(experimental_data.filtered2.values, self.filtered_spectrum, 'e3_fi')
 
         print('Running Third Experimental Responses, Unity Spectrum...')
-        self.run_set(self.experimental_response3, self.unity_spectrum, 'e3_un')
+        self.run_set(experimental_data.filtered2.values, self.unity_spectrum, 'e3_un')
 
         print('Running Theoretical Responses, NEBP Spectrum...')
         self.run_set(self.theoretical_response, self.nebp_spectrum, 'th_ne')

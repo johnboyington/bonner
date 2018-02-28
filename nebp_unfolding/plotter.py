@@ -1,9 +1,9 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import rc, rcParams
-from spectrum import Spectrum
-from lwr_spectrum import FluxTypical
-from nebp_spectrum import FluxNEBP
+from spectrum import Spectrum  # located in my python_modules repo: https://github.com/johnboyington/python_modules
+from lwr_spectrum import FluxTypical  # located in my python_modules repo: https://github.com/johnboyington/python_modules
+from nebp_spectrum import FluxNEBP  # located in my python_modules repo: https://github.com/johnboyington/python_modules
 
 
 class Plot(object):
@@ -23,9 +23,6 @@ class Plot(object):
     def load_data(self):
         # load scale56 bin edges
         self.edges = np.loadtxt('scale56.txt')
-
-        # load peak channels
-        self.peak_channels = np.loadtxt('peak_channels.txt')
 
         # load typical lwr spectrum
         sf = 294858.046942 / 0.0263292381867
@@ -55,8 +52,7 @@ class Plot(object):
                          'e2_ne_gr', 'e2_ne_mx',
                          'e3_ne_gr', 'e3_ne_mx',
                          'e3_fi_gr', 'e3_fi_mx',
-                         'e3_un_gr', 'e3_un_mx',
-                         'th_ne_gr', 'th_ne_mx']
+                         'e3_un_gr', 'e3_un_mx']
         for name in self.datasets:
             self.load_dataset(name)
 
@@ -76,7 +72,6 @@ class Plot(object):
         self.plot('e3_ne_gr', 'e3_ne_mx', '3', self.nebp_spectrum, (1E2, 1E13))
         self.plot('e3_un_gr', 'e3_un_mx', 'unity', self.unity_spectrum, (1E-1, 1E11))
         self.plot('e3_fi_gr', 'e3_fi_mx', 'filtered', self.filtered_spectrum, (1E0, 1E13))
-        self.plot('th_ne_gr', 'th_ne_mx', 'theoretical', self.nebp_spectrum, (1E2, 1E13))
 
     def plot(self, name1, name2, savename, ds, ylims=False):
         fig = plt.figure(0)
@@ -98,55 +93,7 @@ class Plot(object):
         ax.spines['top'].set_visible(False)
         ax.spines['right'].set_visible(False)
         ax.legend(frameon=False)
-        fig.savefig('unfolded_{}.png'.format(savename), dpi=300)
-        plt.close(fig)
-
-        # only maxed
-        fig = plt.figure(1)
-        ax = fig.add_subplot(111)
-        ax.set_xscale('log')
-        ax.set_yscale('log')
-        ax.set_xlabel('Energy $MeV$')
-        ax.set_ylabel('Flux $cm^{-2}s^{-1}MeV^{-1}$')
-        ax.set_xlim(1E-9, 20)
-        ax.set_ylim(*ylims)
-
-        style = {'color': 'red',  'linewidth': 0.7, 'label': 'Default Spectrum'}
-        ax.plot(ds.step_x, ds.step_y, **style)
-        style = {'color': 'blue', 'linestyle': '-.', 'linewidth': 0.7, 'label': 'Maxed'}
-        ax.plot(self.data[name2].step_x, self.data[name2].step_y, **style)
-
-        ax.fill_between(ds.step_x, 0, ds.step_y, facecolor='red', alpha=0.2)
-        ax.fill_between(ds.step_x, 0, self.data[name2].step_y, facecolor='blue', alpha=0.2)
-
-        ax.spines['top'].set_visible(False)
-        ax.spines['right'].set_visible(False)
-        ax.legend(frameon=False)
-        fig.savefig('unfolded_{}_maxed_only.png'.format(savename), dpi=300)
-        plt.close(fig)
-
-        # only gravel
-        fig = plt.figure(2)
-        ax = fig.add_subplot(111)
-        ax.set_xscale('log')
-        ax.set_yscale('log')
-        ax.set_xlabel('Energy $MeV$')
-        ax.set_ylabel('Flux $cm^{-2}s^{-1}MeV^{-1}$')
-        ax.set_xlim(1E-9, 20)
-        ax.set_ylim(ylims)
-
-        style = {'color': 'red',  'linewidth': 0.7, 'label': 'Default Spectrum'}
-        ax.plot(ds.step_x, ds.step_y, **style)
-        style = {'color': 'green', 'linestyle': '--', 'linewidth': 0.7, 'label': 'Gravel'}
-        ax.plot(self.data[name1].step_x, self.data[name1].step_y, **style)
-
-        ax.fill_between(ds.step_x, 0, ds.step_y, facecolor='red', alpha=0.2)
-        ax.fill_between(ds.step_x, 0, self.data[name1].step_y, facecolor='green', alpha=0.2)
-
-        ax.spines['top'].set_visible(False)
-        ax.spines['right'].set_visible(False)
-        ax.legend(frameon=False)
-        fig.savefig('unfolded_{}_gravel_only.png'.format(savename), dpi=300)
+        fig.savefig('plots/unfolded_{}.png'.format(savename), dpi=300)
         plt.close(fig)
 
         # groupwise ratios
@@ -174,7 +121,7 @@ class Plot(object):
         ax.fill_between(ds.step_x, 1, gravel_ratio, facecolor='green', alpha=0.2)
 
         ax.legend(frameon=False)
-        fig.savefig('unfolded_{}_ratios.png'.format(savename), dpi=300)
+        fig.savefig('plots/unfolded_{}_ratios.png'.format(savename), dpi=300)
         plt.close(fig)
 
 if __name__ == '__main__':
