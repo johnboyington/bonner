@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from nebp_spectrum import FluxNEBP
-from spectrum import Spectrum
+from nebp_spectrum import FluxNEBP  # located in my python_modules repo: https://github.com/johnboyington/python_modules
+from spectrum import Spectrum  # located in my python_modules repo: https://github.com/johnboyington/python_modules
 
 
 class Folding(object):

@@ -1,10 +1,10 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import rc, rcParams
-from spectrum import Spectrum
-from lwr_spectrum import FluxTypical
-from nebp_spectrum import FluxNEBP
+from spectrum import Spectrum  # located in my python_modules repo: https://github.com/johnboyington/python_modules
+from nebp_spectrum import FluxNEBP  # located in my python_modules repo: https://github.com/johnboyington/python_modules
 from folding import Folding
+import experimental_data
 
 
 class Folding_Experiment(object):
@@ -13,17 +13,11 @@ class Folding_Experiment(object):
         self.nice_plots()
         self.set_coefficient()
         self.sizes = [0, 2, 3, 5, 8, 10, 12]
-        self.get_robert_data()
-        self.normalize_experimental_responses()
-        self.fold_typical()
         self.fold_nebp()
         self.fold_filtered()
         self.plot_responses()
-        self.plot_theoretical()
-        # self.plot_experimental()
         self.plot_filtered()
         self.plot_diffs()
-        # self.plot_robert()
 
     def nice_plots(self):
         rc('font', **{'family': 'serif'})
@@ -36,57 +30,8 @@ class Folding_Experiment(object):
         rcParams.update({'figure.autolayout': True})
 
     def set_coefficient(self):
+        # TODO: find out what the hell this is
         self.c = 1.774E-2 * (1/4)
-
-    def normalize_experimental_responses(self):
-        bg = np.loadtxt('bonner_data_bg.txt', skiprows=1)
-        s = 5 * 60  # 5 minutes
-        r = np.loadtxt('bonner_data.txt', skiprows=1)
-        r -= bg
-        powers = np.full(len(r), 250) / np.array([25.2, 25.15, 25.15, 25.13, 25.13, 25.15, 25.15])
-        # efficiency_correction
-        e = 1
-        self.experimental_responses = r * powers * (1 / e) * (1 / s)
-
-        # load 2nd dataset
-        s = 5 * 60  # 5 minutes
-        r = np.loadtxt('bonner_data2.txt', skiprows=1)
-        r -= bg
-        powers = (250 / 24.86)
-        # efficiency_correction
-        e = 1
-        self.experimental_responses2 = r * powers * (1 / e) * (1 / s)
-
-        # load 3rd (filtered) dataset
-        s = 5 * 60  # 5 minutes
-        r = np.loadtxt('bonner_data3.txt', skiprows=1)
-        r -= bg
-        powers = (250 / 24.86)
-        # efficiency_correction
-        e = 1
-        self.experimental_responses3 = r * powers * (1 / e) * (1 / s)
-
-    def get_robert_data(self):
-        self.robert_responses = np.array([1935, 8823, 11049, 6825, 2544, 1402, 896]) * 0.18
-
-    def fold_typical(self):
-        # input response matrix
-        genericData = np.loadtxt('nebp_response_functions.txt')
-        genericData = genericData.reshape(7, -1, 4)
-        edges = np.concatenate((np.array([1E-11]), genericData[:, :, 1][0]))
-        rfs = genericData[:, :, 2]
-
-        # produce spectrum object for nebp
-        sf = 294858.046942 / 0.0263292381867
-        f = FluxTypical(edges, sf, 1./7., 600.0)
-        f.change_bins(edges)
-
-        # create and test object
-        fold = Folding(sf=self.c)
-        fold.set_spectrum(f)
-        print('Typical total flux: {}'.format(fold.spectrum.total_flux))
-        fold.set_response_functions(rfs)
-        self.typical_response = fold.fold()
 
     def fold_filtered(self):
         # input response matrix
@@ -137,31 +82,6 @@ class Folding_Experiment(object):
         with open('nebp_theoretical_response.txt', 'w+') as F:
             F.write(s)
 
-    def plot_theoretical(self):
-        fig = plt.figure(50)
-        ax = fig.add_subplot(111)
-        ax.set_ylabel('Response $s^{-1}$')
-        ax.set_xlabel('Sphere Size $in$')
-        style = {'color': 'green', 'marker': '^', 'markerfacecolor': 'None',
-                 'markeredgecolor': 'green', 'linestyle': 'None', 'label': 'Theoretical Typical',
-                 'mew': 0.5, 'ms': 6}
-        ax.plot(self.sizes, self.typical_response, **style)
-        style = {'color': 'blue', 'marker': 'o', 'markerfacecolor': 'None',
-                 'markeredgecolor': 'blue', 'linestyle': 'None', 'label': 'Theoretical NEBP',
-                 'mew': 0.5, 'ms': 6}
-        ax.plot(self.sizes, self.nebp_response, **style)
-        style = {'color': 'orange', 'marker': 'o', 'markerfacecolor': 'None',
-                 'markeredgecolor': 'orange', 'linestyle': 'None', 'label': 'Theoretical NEBP Filtered',
-                 'mew': 0.5, 'ms': 6}
-        ax.plot(self.sizes, self.filtered_response, **style)
-        ax.set_xticks(self.sizes)
-        ax.set_xticklabels(['Bare'] + self.sizes[1:])
-        ax.spines['top'].set_visible(False)
-        ax.spines['right'].set_visible(False)
-        ax.legend()
-        fig.savefig('responses_theoretical.png', dpi=300)
-        plt.close(fig)
-
     def plot_responses(self):
         fig = plt.figure(51)
         ax = fig.add_subplot(111)
@@ -174,42 +94,17 @@ class Folding_Experiment(object):
         style = {'color': 'blue', 'marker': 'o', 'markerfacecolor': 'None',
                  'markeredgecolor': 'blue', 'linestyle': 'None', 'label': 'Experiment #1',
                  'mew': 0.5, 'ms': 6}
-        ax.plot(self.sizes, self.experimental_responses, **style)
+        ax.plot(self.sizes, experimental_data.unfiltered1.values, **style)
         style = {'color': 'green', 'marker': '^', 'markerfacecolor': 'None',
                  'markeredgecolor': 'green', 'linestyle': 'None', 'label': 'Experiment #2',
                  'mew': 0.5, 'ms': 6}
-        ax.plot(self.sizes, self.experimental_responses2, **style)
+        ax.plot(self.sizes, experimental_data.unfiltered2.values, **style)
         ax.set_xticks(self.sizes)
         ax.set_xticklabels(['Bare'] + self.sizes[1:])
         ax.spines['top'].set_visible(False)
         ax.spines['right'].set_visible(False)
         ax.legend()
         fig.savefig('responses_comparison.png', dpi=300)
-        plt.close(fig)
-
-    def plot_experimental(self):
-        fig = plt.figure(51)
-        ax = fig.add_subplot(111)
-        ax.set_ylabel('Response $s^{-1}$')
-        ax.set_xlabel('Sphere Size $in$')
-        style = {'color': 'red', 'marker': 'x', 'markerfacecolor': 'None',
-                 'markeredgecolor': 'red', 'linestyle': 'None', 'label': 'Experimental NEBP',
-                 'mew': 0.5, 'ms': 6}
-        ax.plot(self.sizes, self.experimental_responses, **style)
-        style = {'color': 'green', 'marker': '^', 'markerfacecolor': 'None',
-                 'markeredgecolor': 'green', 'linestyle': 'None', 'label': 'Experimental NEBP #2',
-                 'mew': 0.5, 'ms': 6}
-        ax.plot(self.sizes, self.experimental_responses2, **style)
-        style = {'color': 'indigo', 'marker': 'd', 'markerfacecolor': 'None',
-                 'markeredgecolor': 'indigo', 'linestyle': 'None', 'label': 'Experimental NEBP Filtered',
-                 'mew': 0.5, 'ms': 6}
-        ax.plot(self.sizes, self.experimental_responses3, **style)
-        ax.set_xticks(self.sizes)
-        ax.set_xticklabels(['Bare'] + self.sizes[1:])
-        ax.spines['top'].set_visible(False)
-        ax.spines['right'].set_visible(False)
-        ax.legend()
-        fig.savefig('responses_experimental.png', dpi=300)
         plt.close(fig)
 
     def plot_filtered(self):
@@ -224,7 +119,7 @@ class Folding_Experiment(object):
         style = {'color': 'indigo', 'marker': 'd', 'markerfacecolor': 'None',
                  'markeredgecolor': 'indigo', 'linestyle': 'None', 'label': 'Experimental NEBP Filtered',
                  'mew': 0.5, 'ms': 6}
-        ax.plot(self.sizes, self.experimental_responses3, **style)
+        ax.plot(self.sizes, experimental_data.filtered2.values, **style)
         ax.set_xticks(self.sizes)
         ax.set_xticklabels(['Bare'] + self.sizes[1:])
         ax.spines['top'].set_visible(False)
@@ -234,8 +129,8 @@ class Folding_Experiment(object):
         plt.close(fig)
 
     def plot_diffs(self):
-        diffs1 = 100 * (self.experimental_responses - self.nebp_response) / self.experimental_responses
-        diffs2 = 100 * (self.experimental_responses2 - self.nebp_response) / self.experimental_responses2
+        diffs1 = 100 * ((experimental_data.unfiltered1.values - self.nebp_response) / experimental_data.unfiltered1.values)
+        diffs2 = 100 * ((experimental_data.unfiltered2.values - self.nebp_response) / experimental_data.unfiltered2.values)
         fig = plt.figure(52)
         ax = fig.add_subplot(111)
         ax.set_ylabel('Relative Error %')
@@ -256,18 +151,6 @@ class Folding_Experiment(object):
         fig.savefig('responses_error.png', dpi=250)
         plt.close(fig)
 
-    def plot_robert(self):
-        plt.figure(53)
-        plt.ylabel('relative percent error')
-        plt.xlabel('sphere size $in$')
-        plt.plot(self.sizes, self.typical_response, 'kx', label='theoretical typical')
-        plt.plot(self.sizes, self.nebp_response, 'ko', label='theoretical nebp')
-        plt.plot(self.sizes, self.experimental_responses, 'ro', label='experimental')
-        plt.plot(self.sizes, self.robert_responses, 'bo', label='robert experiment')
-        plt.legend()
-        plt.savefig('responses_robert.png', dpi=250)
-        plt.close()
-
 
 if __name__ == '__main__':
-    do = Folding_Experiment()
+    Folding_Experiment()

@@ -45,9 +45,9 @@ class Bonner_Data(object):
 
 
 # load in background data
-bg = np.loadtxt('2_background.txt', skiprows=2)
+bg = np.loadtxt('/home/john/workspace/bonner/experimental_data/2_background.txt', skiprows=2)
 
 # load in experimental datasets
-unfiltered1 = Bonner_Data('1_responses_unfiltered.txt', bg)  # unfiltered response from first experiment
-unfiltered2 = Bonner_Data('2_responses_unfiltered.txt', bg)  # unfiltered response from second experiment
-filtered2 = Bonner_Data('2_responses_filtered.txt', bg)  # filtered response from second experiment
+unfiltered1 = Bonner_Data('/home/john/workspace/bonner/experimental_data/1_responses_unfiltered.txt', bg)  # unfiltered response from first experiment
+unfiltered2 = Bonner_Data('/home/john/workspace/bonner/experimental_data/2_responses_unfiltered.txt', bg)  # unfiltered response from second experiment
+filtered2 = Bonner_Data('/home/john/workspace/bonner/experimental_data/2_responses_filtered.txt', bg)  # filtered response from second experiment
