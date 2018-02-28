@@ -9,7 +9,7 @@ class Plot(object):
     def __init__(self):
         '''Function that is called when the class is initialized.'''
         flag = 0
-        self.err_tol = 0.2
+        self.err_tol = 0.05
         self.energies = values.energies
         self.load_data(flag)
         self.make_image(flag)
