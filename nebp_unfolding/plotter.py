@@ -48,11 +48,14 @@ class Plot(object):
 
         # load unfolded data
         self.data = {}
-        self.datasets = ['ex_ne_gr', 'ex_ne_mx',
+        self.datasets = ['e1_ne_gr', 'e1_ne_mx',
                          'e2_ne_gr', 'e2_ne_mx',
-                         'e3_ne_gr', 'e3_ne_mx',
-                         'e3_fi_gr', 'e3_fi_mx',
-                         'e3_un_gr', 'e3_un_mx']
+                         'f2_ne_gr', 'f2_ne_mx',
+                         'f2_fi_gr', 'f2_fi_mx',
+                         'f2_un_gr', 'f2_un_mx',
+                         'f3_ne_gr', 'f3_ne_mx',
+                         'f3_fi_gr', 'f3_fi_mx',
+                         'f3_un_gr', 'f3_un_mx']
         for name in self.datasets:
             self.load_dataset(name)
 
@@ -67,11 +70,18 @@ class Plot(object):
         rcParams.update({'figure.autolayout': True})
 
     def plot_all(self):
-        self.plot('ex_ne_gr', 'ex_ne_mx', '1', self.nebp_spectrum, (1E2, 1E13))
+        self.plot('e1_ne_gr', 'e1_ne_mx', '1', self.nebp_spectrum, (1E2, 1E13))
         self.plot('e2_ne_gr', 'e2_ne_mx', '2', self.nebp_spectrum, (1E2, 1E13))
-        self.plot('e3_ne_gr', 'e3_ne_mx', '3', self.nebp_spectrum, (1E2, 1E13))
-        self.plot('e3_un_gr', 'e3_un_mx', 'unity', self.unity_spectrum, (1E-1, 1E11))
-        self.plot('e3_fi_gr', 'e3_fi_mx', 'filtered', self.filtered_spectrum, (1E0, 1E13))
+
+        # first set of filtered results
+        self.plot('f2_ne_gr', 'f2_ne_mx', 'fil2', self.nebp_spectrum, (1E2, 1E13))
+        self.plot('f2_un_gr', 'f2_un_mx', 'fil2_unity', self.unity_spectrum, (1E-1, 1E11))
+        self.plot('f2_fi_gr', 'f2_fi_mx', 'fil2_filtered', self.filtered_spectrum, (1E0, 1E13))
+
+        # second set of filtered results
+        self.plot('f3_ne_gr', 'f3_ne_mx', 'fil3', self.nebp_spectrum, (1E2, 1E13))
+        self.plot('f3_un_gr', 'f3_un_mx', 'fil3_unity', self.unity_spectrum, (1E-1, 1E11))
+        self.plot('f3_fi_gr', 'f3_fi_mx', 'fil3_filtered', self.filtered_spectrum, (1E0, 1E13))
 
     def plot(self, name1, name2, savename, ds, ylims=False):
         fig = plt.figure(0)

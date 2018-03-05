@@ -85,27 +85,25 @@ class Experiment(object):
         self.unfolding.run('{}_mx'.format(name))
 
     def run_all(self):
-        print('\n')
-        print('Running First Experimental Responses, NEBP Spectrum...')
-        self.run_set(experimental_data.unfiltered1.values, self.nebp_spectrum, 'ex_ne')
+        print('\nUnfolding... \n')
+        # unfolding with the first set of unfiltered responses
+        self.run_set(experimental_data.unfiltered1.values, self.nebp_spectrum, 'e1_ne')
 
-        print('Running Second Experimental Responses, NEBP Spectrum...')
+        # unfolding with the second set of unfiltered responses
         self.run_set(experimental_data.unfiltered2.values, self.nebp_spectrum, 'e2_ne')
 
-        print('Running Third Experimental Responses, NEBP Spectrum...')
-        self.run_set(experimental_data.filtered2.values, self.nebp_spectrum, 'e3_ne')
+        # unfolding with the first set of filtered responses
+        self.run_set(experimental_data.filtered2.values, self.nebp_spectrum, 'f2_ne')
+        self.run_set(experimental_data.filtered2.values, self.filtered_spectrum, 'f2_fi')
+        self.run_set(experimental_data.filtered2.values, self.unity_spectrum, 'f2_un')
 
-        print('Running Third Experimental Responses, Filtered NEBP Spectrum...')
-        self.run_set(experimental_data.filtered2.values, self.filtered_spectrum, 'e3_fi')
+        # unfolding with the second set of filtered responses
+        self.run_set(experimental_data.filtered3.values, self.nebp_spectrum, 'f3_ne')
+        self.run_set(experimental_data.filtered3.values, self.filtered_spectrum, 'f3_fi')
+        self.run_set(experimental_data.filtered3.values, self.unity_spectrum, 'f3_un')
 
-        print('Running Third Experimental Responses, Unity Spectrum...')
-        self.run_set(experimental_data.filtered2.values, self.unity_spectrum, 'e3_un')
-
-        print('Running Theoretical Responses, NEBP Spectrum...')
+        # unfolding with the theoretical response
         self.run_set(self.theoretical_response, self.nebp_spectrum, 'th_ne')
-
-        print('Running Theoretical Responses, Typical LWR Spectrum...')
-        self.run_set(self.theoretical_response, self.nebp_spectrum, 'th_ty')
 
         print('Finished Unfolding\n')
         shutil.rmtree('inp')
