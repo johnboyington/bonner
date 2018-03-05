@@ -48,13 +48,18 @@ class Bonner_Data(object):
 
 # load in background data
 bg = np.loadtxt('/home/john/workspace/bonner/experimental_data/2_background.txt', skiprows=2)
+bg3 = bg * (12/5)  # multiply previous bg count to be in the same timescale as filtered3
 
 # load in experimental datasets
-unfiltered1 = Bonner_Data('/home/john/workspace/bonner/experimental_data/1_responses_unfiltered.txt', bg)  # unfiltered response from first experiment
-unfiltered2 = Bonner_Data('/home/john/workspace/bonner/experimental_data/2_responses_unfiltered.txt', bg)  # unfiltered response from second experiment
-filtered2 = Bonner_Data('/home/john/workspace/bonner/experimental_data/2_responses_filtered.txt', bg)  # filtered response from second experiment
-filtered3 = Bonner_Data('/home/john/workspace/bonner/experimental_data/3_responses_filtered.txt', bg * (12/5), 12*60, 250)  # filtered response from second experiment
+# unfiltered response from first experiment
+unfiltered1 = Bonner_Data('/home/john/workspace/bonner/experimental_data/1_responses_unfiltered.txt', bg)
+# unfiltered response from second experiment
+unfiltered2 = Bonner_Data('/home/john/workspace/bonner/experimental_data/2_responses_unfiltered.txt', bg)
+# filtered response from second experiment
+filtered2 = Bonner_Data('/home/john/workspace/bonner/experimental_data/2_responses_filtered.txt', bg)
+# filtered response from second experiment
+filtered3 = Bonner_Data('/home/john/workspace/bonner/experimental_data/3_responses_filtered.txt', bg3, 12*60, 250)
 
-if True:
+if False:
     plt.errorbar(range(7), filtered2.values, filtered2.error)
     plt.errorbar(range(7), filtered3.values, filtered3.error)
