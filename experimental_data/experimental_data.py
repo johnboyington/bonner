@@ -1,14 +1,17 @@
 import numpy as np
 import ambe_calibration
+import matplotlib.pyplot as plt
 
 
 class Bonner_Data(object):
 
-    def __init__(self, filename, background):
+    def __init__(self, filename, background, t=300, p=25):
+        self.t = t  # counting time - the total time (s) of the measurement
+        self.p = p  # power - the power W(th) of the measurement
         # load in data
         data = np.loadtxt(filename, skiprows=2)
         # subtract the error
-        data = self.sub_error(data, bg)
+        data = self.sub_error(data, background)
         # normalize the data
         data = self.normalize(data)
 
@@ -20,13 +23,12 @@ class Bonner_Data(object):
         ''' Normalize a given data set using the following parameters '''
         # parameters
         e = ambe_calibration.detection_efficiency  # detector efficiency - the efficiency of the bonner cart's LiI detector
-        t = 5 * 60  # counting time - the total time (s) of the measurement
-        pf = 250 / 25  # power factor - ratio of desired power to power which measurements were taken
+        self.pf = 250 / self.p  # power factor - ratio of desired power to power which measurements were taken
 
         # multiply data by coefficients
         data *= (1/e)
-        data *= (1/t)
-        data *= pf
+        data *= (1/self.t)
+        data *= self.pf
 
         # return normalized data
         return data
@@ -51,3 +53,8 @@ bg = np.loadtxt('/home/john/workspace/bonner/experimental_data/2_background.txt'
 unfiltered1 = Bonner_Data('/home/john/workspace/bonner/experimental_data/1_responses_unfiltered.txt', bg)  # unfiltered response from first experiment
 unfiltered2 = Bonner_Data('/home/john/workspace/bonner/experimental_data/2_responses_unfiltered.txt', bg)  # unfiltered response from second experiment
 filtered2 = Bonner_Data('/home/john/workspace/bonner/experimental_data/2_responses_filtered.txt', bg)  # filtered response from second experiment
+filtered3 = Bonner_Data('/home/john/workspace/bonner/experimental_data/3_responses_filtered.txt', bg * (12/5), 12*60, 250)  # filtered response from second experiment
+
+if True:
+    plt.errorbar(range(7), filtered2.values, filtered2.error)
+    plt.errorbar(range(7), filtered3.values, filtered3.error)
