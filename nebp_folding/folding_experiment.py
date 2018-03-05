@@ -117,9 +117,13 @@ class Folding_Experiment(object):
                  'mew': 0.5, 'ms': 6}
         ax.plot(self.sizes, self.filtered_response, **style)
         style = {'color': 'indigo', 'marker': 'd', 'markerfacecolor': 'None',
-                 'markeredgecolor': 'indigo', 'linestyle': 'None', 'label': 'Experimental NEBP Filtered',
+                 'markeredgecolor': 'indigo', 'linestyle': 'None', 'label': 'Experiment #1 NEBP Filtered',
                  'mew': 0.5, 'ms': 6}
         ax.plot(self.sizes, experimental_data.filtered2.values, **style)
+        style = {'color': 'darkgreen', 'marker': 'v', 'markerfacecolor': 'None',
+                 'markeredgecolor': 'darkgreen', 'linestyle': 'None', 'label': 'Experiment #2 NEBP Filtered',
+                 'mew': 0.5, 'ms': 6}
+        ax.plot(self.sizes, experimental_data.filtered3.values, **style)
         ax.set_xticks(self.sizes)
         ax.set_xticklabels(['Bare'] + self.sizes[1:])
         ax.spines['top'].set_visible(False)
