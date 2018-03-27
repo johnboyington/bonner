@@ -128,6 +128,7 @@ class Folding_Experiment(object):
         ax.set_xticklabels(['Bare'] + self.sizes[1:])
         ax.spines['top'].set_visible(False)
         ax.spines['right'].set_visible(False)
+        # ax.set_yscale('log')
         ax.legend()
         fig.savefig('responses_filtered.png', dpi=300)
         plt.close(fig)
